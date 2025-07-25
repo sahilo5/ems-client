@@ -12,6 +12,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles, children 
   const userRole = localStorage.getItem("userRole");
 
   if (!token || !userRole || !allowedRoles.includes(userRole)) {
+    localStorage.clear();
     return <Navigate to="/login" replace />;
   }
 

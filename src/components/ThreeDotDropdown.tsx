@@ -45,7 +45,7 @@ const ThreeDotDropdown: React.FC<ThreeDotDropdownProps> = ({ options = [] }) => 
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+        <div className="absolute right-0 mt-2 w-48 bg-light border border-gray-200 rounded-md shadow-lg z-50">
           <ul className="py-1">
             {options.map(({ label, href, target = "_self" }, index) => (
               <li key={index}>
@@ -53,7 +53,7 @@ const ThreeDotDropdown: React.FC<ThreeDotDropdownProps> = ({ options = [] }) => 
                   <Link
                     to={href}
                     target={target}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="block px-4 py-2 text-sm text-secondary hover:bg-white"
                     onClick={() => setIsOpen(false)}
                   >
                     {label}
@@ -63,7 +63,7 @@ const ThreeDotDropdown: React.FC<ThreeDotDropdownProps> = ({ options = [] }) => 
                     href={href}
                     target={target}
                     rel="noopener noreferrer"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="block px-4 py-2 text-sm text-secondary hover:bg-white"
                     onClick={() => setIsOpen(false)}
                   >
                     {label}

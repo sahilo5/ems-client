@@ -3,6 +3,7 @@ import React from "react";
 import Form from "../../components/Form";
 import Button from "../../components/Button";
 import { useLoginForm } from "./LoginFrom.hooks";
+import { COMPANY_NAME } from "../../constants";
 
 const LoginForm = () => {
   const {
@@ -10,14 +11,20 @@ const LoginForm = () => {
     setEmail,
     password,
     setPassword,
-    handleLogin,
     handleRegister,
+    onLoginSubmit,
+    errors
   } = useLoginForm();
 
   return (
     <div className="max-w-md w-full bg-light shadow-lg p-8 rounded-2xl border border-light">
       <h2 className="text-2xl font-bold text-center mb-6 text-dark">Login</h2>
-
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          onLoginSubmit();
+        }}
+>
       <Form
         fields={[
           {
@@ -27,6 +34,7 @@ const LoginForm = () => {
             value: username,
             onChange: setEmail,
             placeholder: "Enter your username",
+            error: errors.usernameError,
           },
           {
             type: "password",
@@ -35,18 +43,22 @@ const LoginForm = () => {
             value: password,
             onChange: setPassword,
             placeholder: "Enter your password",
+            error: errors.passwordError,
           },
         ]}
       />
 
+      <div className="text-sm text-red-500 p-2">{errors.invalidError}</div>
+
       <div className="mt-6 flex justify-between space-x-4">
-        <Button variant="primary" onClick={handleLogin} className="w-full">
+        <Button variant="primary" type="submit" className="w-full">
           Login
         </Button>
         <Button variant="secondary" onClick={handleRegister} className="w-full">
           Register
         </Button>
       </div>
+      
 
       <div className="mt-4 text-center">
         <button
@@ -57,6 +69,10 @@ const LoginForm = () => {
           Forgot Password?
         </button>
       </div>
+      <div className="mt-6 text-center text-sm text-muted">
+  &copy; {new Date().getFullYear()} <span className="font-semibold text-primary">{COMPANY_NAME}</span>. All rights reserved.
+</div>  
+      </form>
     </div>
   );
 };

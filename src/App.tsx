@@ -3,10 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import LoginForm from "./pages/login/LoginFrom";
 import RegisterForm from "./pages/register/RegisterForm";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Dashboard from "./pages/Dashboard";
-import './App.css'
+import './App.css';
 
-// Routes
 import adminRoutes from "./routes/adminRoutes";
 import userRoutes from "./routes/userRoutes";
 import employeeRoutes from "./routes/employeeRoutes";
@@ -14,6 +12,14 @@ import React from "react";
 import DashboardLayout from "./pages/Layouts/DashboardLayout";
 
 function App() {
+  const role = localStorage.getItem("userRole");
+
+  let roleRoutes: Array<{ path: string; element: React.JSX.Element }> = [];
+
+  if (role === "ADMIN") roleRoutes = adminRoutes;
+  else if (role === "USER") roleRoutes = userRoutes;
+  else if (role === "EMPLOYEE") roleRoutes = employeeRoutes;
+
   return (
     <Router>
       <Routes>
@@ -21,49 +27,21 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
 
-        {/* Admin Routes */}
+        {/* Shared Protected Route */}
         <Route
           path="/"
           element={
-            <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <ProtectedRoute allowedRoles={["ADMIN", "USER", "EMPLOYEE"]}>
               <DashboardLayout />
             </ProtectedRoute>
           }
         >
-          {adminRoutes.map(({ path, element }, idx) => (
+          {roleRoutes.map(({ path, element }, idx) => (
             <Route key={idx} path={path} element={element} />
           ))}
         </Route>
 
-        {/* User Routes */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute allowedRoles={["USER"]}>
-              <DashboardLayout />
-            </ProtectedRoute>
-          }
-        >
-          {userRoutes.map(({ path, element }, idx) => (
-            <Route key={idx} path={path} element={element} />
-          ))}
-        </Route>
-
-        {/* Employee Routes */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
-              <DashboardLayout />
-            </ProtectedRoute>
-          }
-        >
-          {employeeRoutes.map(({ path, element }, idx) => (
-            <Route key={idx} path={path} element={element} />
-          ))}
-        </Route>
-
-        {/* Catch All */}
+        {/* Fallback */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>

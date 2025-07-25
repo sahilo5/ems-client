@@ -2,13 +2,14 @@ import React from "react";
 import Label from "./Label";
 
 type InputProps = {
-  type?: "text" | "email" | "password" | "date";
+  type?: "text" | "email" | "password" | "date" | "number";
   label?: string;
   placeholder?: string;
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
   className?: string;
+  hasError?: boolean; // 👈 NEW
 };
 
 const Input: React.FC<InputProps> = ({
@@ -19,16 +20,16 @@ const Input: React.FC<InputProps> = ({
   onChange,
   disabled = false,
   className = "",
+  hasError = false,
 }) => {
-  // Suggest autocomplete values based on type
   const getAutoComplete = () => {
     switch (type) {
       case "email":
         return "email";
       case "password":
-        return "current-password"; // or "new-password" in registration
+        return "current-password";
       case "text":
-        return "on"; 
+        return "on";
       default:
         return undefined;
     }
@@ -45,8 +46,9 @@ const Input: React.FC<InputProps> = ({
         disabled={disabled}
         autoComplete={getAutoComplete()}
         className={`
-          px-3 py-2 text-sm rounded-md border border-secondary bg-white text-dark 
-          focus:outline-none focus:ring-2 focus:ring-primary
+          px-3 py-2 text-sm rounded-md border bg-white text-dark 
+          focus:outline-none 
+          ${hasError ? "border-red-500 focus:ring-2 focus:ring-red-500" : "border-secondary focus:ring-2 focus:ring-primary"} 
           disabled:opacity-50 disabled:cursor-not-allowed
         `}
       />

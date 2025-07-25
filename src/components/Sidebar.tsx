@@ -30,16 +30,16 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div
       className={`${
-        collapsed ? "w-20" : "w-64"
+        collapsed ? "w-16" : "w-64"
       } h-full bg-primary text-white shadow-lg flex flex-col transition-all duration-300`}
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-light">
         <button
           onClick={() => setCollapsed((prev) => !prev)}
-          className="text-white focus:outline-none"
+          className="p-1 hover:bg-gray-200 rounded-md group"
         >
-          <Menu className="w-5 h-5" />
+          <Menu className="w-6 h-6 text-light group-hover:text-dark" />
         </button>
         {!collapsed && (
           <div className="text-xl font-bold whitespace-nowrap">EMS</div>

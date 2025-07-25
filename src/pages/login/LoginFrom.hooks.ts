@@ -1,12 +1,16 @@
 // pages/LoginForm.hooks.ts
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "../../utils/api"; // path to your API utility
+import { api } from "../../utils/api";
+import { useToast } from "../../components/ToastProvider";
 
 export const useLoginForm = () => {
   const navigate = useNavigate();
   const [username, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const newErrors: { [key: string]: string } = {};
+  const { showToast } = useToast();
 
   const handleLogin = async () => {
     try {
@@ -19,15 +23,35 @@ export const useLoginForm = () => {
       localStorage.setItem("token", response.accessToken);
       localStorage.setItem("userName", response.username);
       localStorage.setItem("userRole", response.urserRole);
+
+      let userRole = localStorage.getItem("userRole");
+      showToast("Login successfully!", "success")
       
-      navigate("/Dashboard");
+      navigate("/");
     } catch (err: any) {
-      alert(err.message);
+      newErrors.invalidError = "Invalid username"
     }
   };
 
   const handleRegister = () => {
     navigate("/register");
+  };
+
+  const validate = () => {
+
+
+    if (!username.trim()) newErrors.usernameError = " ";
+    if (!password) newErrors.passwordError = " ";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+
+  const onLoginSubmit = () => {
+    if (validate()) {
+      handleLogin();
+    }
   };
 
   return {
@@ -37,5 +61,7 @@ export const useLoginForm = () => {
     setPassword,
     handleLogin,
     handleRegister,
+    onLoginSubmit,
+    errors
   };
 };

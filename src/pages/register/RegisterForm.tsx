@@ -1,30 +1,65 @@
-// pages/RegisterForm.tsx
-import React, { useState } from "react";
+import React from "react";
 import Form from "../../components/Form";
 import { useRegisterForm } from "./RegisterForm.hooks";
 import Button from "../../components/Button";
+import Input from "../../components/Input"; // import for direct use
+import { COMPANY_NAME } from "../../constants";
 
 const RegisterForm = () => {
   const {
+    firstName,
+    setFirstName,
+    lastName,
+    setLastName,
     email,
-    password,
-    dob,
-    agree,
-    gender,
-    handleRegister,
     setEmail,
+    phoneNumber,
+    setPhoneNumber,
+    username,
+    setUsername,
+    password,
     setPassword,
-    setDob,
+    confirmPassword,
+    setConfirmPassword,
+    agree,
     setAgree,
-    setGender,
-    handleLogin
+    handleLogin,
+    onSubmit,
+    errors
   } = useRegisterForm();
 
   return (
-    <div className="max-w-md w-full bg-light shadow-lg p-8 rounded-2xl border border-light">
+    <div className="max-w-md w-full bg-light shadow-lg p-6 rounded-2xl border border-light">
       <h2 className="text-2xl font-bold text-center mb-6 text-dark">Register</h2>
+
+      {/* Rest of the Form */}
       <Form
+        className="mt-4"
         fields={[
+
+          {
+            group: true,
+            fields: [
+              {
+                type: "text",
+                name: "firstName",
+                label: "First Name",
+                value: firstName,
+                onChange: setFirstName,
+                error: errors.firstNameError,
+                placeholder: "First Name",
+              },
+              {
+                type: "text",
+                name: "lastName",
+                label: "Last Name",
+                value: lastName,
+                onChange: setLastName,
+                error: errors.lastNameError,
+                placeholder: "Last Name",
+              },
+            ],
+          },
           {
             type: "email",
             name: "email",
@@ -32,6 +67,25 @@ const RegisterForm = () => {
             value: email,
             onChange: setEmail,
             placeholder: "Your email",
+            error: errors.emailError, // Assuming errors is an object containing error messages
+          },
+          {
+            type: "number",
+            name: "phoneNumber",
+            label: "Phone Number",
+            value: phoneNumber,
+            onChange: setPhoneNumber,
+            placeholder: "Your Phone Number",
+            error: errors.phoneNumberError,
+          },
+          {
+            type: "text",
+            name: "username",
+            label: "Username",
+            value: username,
+            onChange: setUsername,
+            error: errors.usernameError,
+            placeholder: "Username",
           },
           {
             type: "password",
@@ -40,25 +94,16 @@ const RegisterForm = () => {
             value: password,
             onChange: setPassword,
             placeholder: "Choose a password",
+            error: errors.passwordError,
           },
           {
-            type: "date",
-            name: "dob",
-            label: "Date of Birth",
-            value: dob,
-            onChange: setDob,
-          },
-          {
-            type: "dropdown",
-            name: "gender",
-            label: "Gender",
-            value: gender,
-            onChange: setGender,
-            options: [
-              { label: "Male", value: "male" },
-              { label: "Female", value: "female" },
-              { label: "Other", value: "other" },
-            ],
+            type: "password",
+            name: "confirmPassword",
+            label: "Confirm Password",
+            value: confirmPassword,
+            onChange: setConfirmPassword,
+            placeholder: "Confirm a password",
+            error: errors.confirmPasswordError,
           },
           {
             type: "checkbox",
@@ -66,17 +111,23 @@ const RegisterForm = () => {
             label: "I agree to the terms",
             checked: agree,
             onChange: setAgree,
+            error: errors.agreeError,
           },
         ]}
       />
+
+      {/* Buttons */}
       <div className="mt-6 flex justify-between space-x-4">
-        <Button variant="primary" onClick={handleRegister} className="w-full">
+        <Button variant="primary" onClick={onSubmit} className="w-full">
           Register
         </Button>
         <Button variant="secondary" onClick={handleLogin} className="w-full">
           Login
         </Button>
       </div>
+      <div className="mt-6 text-center text-sm text-muted">
+  &copy; {new Date().getFullYear()} <span className="font-semibold text-primary">{COMPANY_NAME}</span>. All rights reserved.
+</div>
     </div>
   );
 };
