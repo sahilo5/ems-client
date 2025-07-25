@@ -34,7 +34,7 @@ type FormField =
 
 type FormProps = {
   fields: FormField[];
-  onSubmit: () => void;
+  onSubmit?: () => void; // ✅ Now optional
   submitLabel?: string;
   disabled?: boolean;
   className?: string;
@@ -43,18 +43,12 @@ type FormProps = {
 const Form: React.FC<FormProps> = ({
   fields,
   onSubmit,
-  submitLabel = "Submit",
+  submitLabel,
   disabled = false,
   className = "",
 }) => {
-  return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit();
-      }}
-      className={`space-y-4 ${className}`}
-    >
+  const content = (
+    <div className={`space-y-4 ${className}`}>
       {fields.map((field, idx) => {
         if (field.type === "checkbox") {
           return (
@@ -94,10 +88,26 @@ const Form: React.FC<FormProps> = ({
         );
       })}
 
-      <Button type="submit" disabled={disabled}>
-        {submitLabel}
-      </Button>
+      {submitLabel && onSubmit && (
+        <Button type="submit" disabled={disabled}>
+          {submitLabel}
+        </Button>
+      )}
+    </div>
+  );
+
+  // Wrap in <form> only if submit is present
+  return onSubmit ? (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit();
+      }}
+    >
+      {content}
     </form>
+  ) : (
+    content
   );
 };
 

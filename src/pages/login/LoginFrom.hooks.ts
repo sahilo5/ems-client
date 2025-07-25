@@ -15,20 +15,19 @@ export const useLoginForm = () => {
         body: JSON.stringify({ username, password }),
       });
 
-      alert("Login successful:");
-
-      // To store token, redirect, or show message here
+      // To store token,userName, userRole
       localStorage.setItem("token", response.accessToken);
-      localStorage.setItem("username", response.username    );
+      localStorage.setItem("userName", response.username);
+      localStorage.setItem("userRole", response.urserRole);
       
-      navigate("/test"); 
+      navigate("/Dashboard");
     } catch (err: any) {
       alert(err.message);
     }
   };
 
   const handleRegister = () => {
-    navigate("/registerPage");
+    navigate("/register");
   };
 
   return {

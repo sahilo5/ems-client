@@ -1,25 +1,29 @@
 // pages/RegisterForm.tsx
 import React, { useState } from "react";
 import Form from "../../components/Form";
+import { useRegisterForm } from "./RegisterForm.hooks";
+import Button from "../../components/Button";
 
 const RegisterForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [dob, setDob] = useState("");
-  const [agree, setAgree] = useState(false);
-  const [gender, setGender] = useState("male");
-
-  const handleRegister = () => {
-    console.log("Registering with:", { email, password, dob, gender, agree });
-    // Add validation or API call
-  };
+  const {
+    email,
+    password,
+    dob,
+    agree,
+    gender,
+    handleRegister,
+    setEmail,
+    setPassword,
+    setDob,
+    setAgree,
+    setGender,
+    handleLogin
+  } = useRegisterForm();
 
   return (
-    <div className="max-w-sm mx-auto mt-10 bg-white shadow p-6 rounded border border-light">
-      <h2 className="text-xl font-semibold mb-4 text-dark">Register</h2>
+    <div className="max-w-md w-full bg-light shadow-lg p-8 rounded-2xl border border-light">
+      <h2 className="text-2xl font-bold text-center mb-6 text-dark">Register</h2>
       <Form
-        onSubmit={handleRegister}
-        submitLabel="Register"
         fields={[
           {
             type: "email",
@@ -65,6 +69,14 @@ const RegisterForm = () => {
           },
         ]}
       />
+      <div className="mt-6 flex justify-between space-x-4">
+        <Button variant="primary" onClick={handleRegister} className="w-full">
+          Register
+        </Button>
+        <Button variant="secondary" onClick={handleLogin} className="w-full">
+          Login
+        </Button>
+      </div>
     </div>
   );
 };

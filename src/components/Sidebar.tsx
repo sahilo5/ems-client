@@ -1,5 +1,6 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React, { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { LogOut, Menu } from "lucide-react"; // You can customize these icons
 
 export type NavItem = {
   label: string;
@@ -9,12 +10,43 @@ export type NavItem = {
 
 type SidebarProps = {
   navItems: NavItem[];
+  logoutLabel?: string;
+  logoutIcon?: React.ReactNode;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ navItems }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  navItems,
+  logoutLabel = "Logout",
+  logoutIcon = <LogOut className="w-4 h-4" />,
+}) => {
+  const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
   return (
-    <div className="w-64 h-full bg-primary text-white shadow-lg flex flex-col">
-      <div className="text-xl font-bold p-4 border-b border-light">EMS</div>
+    <div
+      className={`${
+        collapsed ? "w-20" : "w-64"
+      } h-full bg-primary text-white shadow-lg flex flex-col transition-all duration-300`}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-light">
+        <button
+          onClick={() => setCollapsed((prev) => !prev)}
+          className="text-white focus:outline-none"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+        {!collapsed && (
+          <div className="text-xl font-bold whitespace-nowrap">EMS</div>
+        )}
+      </div>
+
+      {/* Navigation */}
       <nav className="flex-1 p-2 space-y-1">
         {navItems.map((item) => (
           <NavLink
@@ -27,10 +59,21 @@ const Sidebar: React.FC<SidebarProps> = ({ navItems }) => {
             }
           >
             {item.icon}
-            <span>{item.label}</span>
+            {!collapsed && <span>{item.label}</span>}
           </NavLink>
         ))}
       </nav>
+
+      {/* Logout Button */}
+      <div className="p-4 border-t border-light">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center space-x-2 text-light hover:text-white text-sm"
+        >
+          {logoutIcon}
+          {!collapsed && <span>{logoutLabel}</span>}
+        </button>
+      </div>
     </div>
   );
 };
