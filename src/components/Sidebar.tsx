@@ -1,6 +1,13 @@
-import React, { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
-import { LogOut, Menu } from "lucide-react"; // You can customize these icons
+import React, { useState, useEffect } from "react";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import {
+  LogOut,
+  Menu,
+  Home as HomeIcon,
+  Users2,
+  User as UserIcon,
+} from "lucide-react";
+import Popup from "./Popup";
 
 export type NavItem = {
   label: string;
@@ -9,7 +16,7 @@ export type NavItem = {
 };
 
 type SidebarProps = {
-  navItems: NavItem[];
+  navItems?: NavItem[];
   logoutLabel?: string;
   logoutIcon?: React.ReactNode;
 };
@@ -17,14 +24,53 @@ type SidebarProps = {
 const Sidebar: React.FC<SidebarProps> = ({
   navItems,
   logoutLabel = "Logout",
-  logoutIcon = <LogOut className="w-4 h-4" />,
 }) => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Fallback default navItems if not provided
+  const defaultNavItems: NavItem[] = [
+    { label: "Dashboard", path: "/admin/dashboard", icon: <HomeIcon /> },
+    {
+      label: "Employees",
+      path: "/admin/employee-management",
+      icon: <Users2 />,
+    },
+    { label: "Profile", path: "/admin/profile", icon: <UserIcon /> },
+  ];
+
+  const effectiveNavItems =
+    navItems && navItems.length > 0 ? navItems : defaultNavItems;
 
   const handleLogout = () => {
-    localStorage.clear();
     navigate("/login");
+    localStorage.clear(); 
+  };
+
+  // Auto-navigate to first nav item if on base route
+  useEffect(() => {
+    const firstPath = effectiveNavItems[0]?.path;
+
+    // Adjust this logic if your base layout route is different
+    const isOnBaseRoute =
+      location.pathname === "/admin" || location.pathname === "/";
+
+    if (isOnBaseRoute && firstPath) {
+      navigate(firstPath, { replace: true });
+    }
+  }, [location.pathname, effectiveNavItems, navigate]);
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleConfirm = () => {
+    handleLogout();
+    setIsOpen(false);
+  };
+
+  const handleCancel = () => {
+    console.log("Cancelled");
+    setIsOpen(false);
   };
 
   return (
@@ -48,7 +94,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Navigation */}
       <nav className="flex-1 p-2 space-y-1">
-        {navItems.map((item) => (
+        {effectiveNavItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
@@ -67,12 +113,26 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Logout Button */}
       <div className="p-4 border-t border-light">
         <button
-          onClick={handleLogout}
-          className="w-full flex items-center space-x-2 text-light hover:text-white text-sm"
+          onClick={() => setIsOpen(true)}
+          className="w-full flex items-center space-x-2 p-2 hover:bg-gray-200 rounded-md group text-sm"
         >
-          {logoutIcon}
-          {!collapsed && <span>{logoutLabel}</span>}
+          <LogOut className="w-4 h-4 text-light group-hover:text-dark" />
+          {!collapsed && (
+            <span className="text-light group-hover:text-dark">
+              {logoutLabel}
+            </span>
+          )}
         </button>
+
+        <Popup
+        title="Confirm"
+        content="Are you sure you want to logout. This action cannot be undone."
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        variant="confirm"
+      />
       </div>
     </div>
   );

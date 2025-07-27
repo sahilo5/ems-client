@@ -1,24 +1,19 @@
-// App.tsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import LoginForm from "./pages/login/LoginFrom";
 import RegisterForm from "./pages/register/RegisterForm";
 import ProtectedRoute from "./components/ProtectedRoute";
-import './App.css';
-
-import adminRoutes from "./routes/adminRoutes";
-import userRoutes from "./routes/userRoutes";
-import employeeRoutes from "./routes/employeeRoutes";
-import React from "react";
 import DashboardLayout from "./pages/Layouts/DashboardLayout";
+import { getRoutesByRole } from "./routes";
+import React, { useContext } from "react";
+import { AuthContext } from "./context/AuthContext";
 
 function App() {
-  const role = localStorage.getItem("userRole");
+  const { role, loading } = useContext(AuthContext);
 
-  let roleRoutes: Array<{ path: string; element: React.JSX.Element }> = [];
-
-  if (role === "ADMIN") roleRoutes = adminRoutes;
-  else if (role === "USER") roleRoutes = userRoutes;
-  else if (role === "EMPLOYEE") roleRoutes = employeeRoutes;
+if (loading) {
+  return <div className="flex justify-center items-center h-screen">Loading...</div>;
+}  
+  const roleRoutes = getRoutesByRole(role);
 
   return (
     <Router>
@@ -27,7 +22,7 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
 
-        {/* Shared Protected Route */}
+        {/* Protected Routes */}
         <Route
           path="/"
           element={
@@ -36,12 +31,12 @@ function App() {
             </ProtectedRoute>
           }
         >
-          {roleRoutes.map(({ path, element }, idx) => (
-            <Route key={idx} path={path} element={element} />
+          {roleRoutes.map(({ path, element }, index) => (
+            <Route key={index} path={path} element={element} />
           ))}
         </Route>
 
-        {/* Fallback */}
+        {/* Catch-all route */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>

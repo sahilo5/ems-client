@@ -19,11 +19,19 @@ export const useRegisterForm = () => {
         method: "POST",
         body: JSON.stringify({ firstName, lastName, email, phoneNumber, username, password, confirmPassword, agree }),
       });
-     
-    } catch (err: any) {
 
+      if (response.status === 201) {
+        navigate("/login");
+      }
+    } catch (err: any) {
+      const serverErrors: { [key: string]: string } = {};
+      if(err.message === "Username already exists"){
+        serverErrors.usernameError = "Username already exists !";
+      }else{
+        serverErrors.usernameError ="Server error. Please try again later !";
+      } 
+      setErrors(prev => ({ ...prev, ...serverErrors }));
     }
-    navigate("/login");
   };
 
   const handleLogin = () => {
@@ -35,8 +43,8 @@ export const useRegisterForm = () => {
 
 
   const validate = () => {
-    const newErrors: { [key: string]: string } = {};
 
+    const newErrors: { [key: string]: string } = {};
     if (!firstName.trim()) newErrors.firstNameError = " ";
     if (!lastName.trim()) newErrors.lastNameError = " ";
 

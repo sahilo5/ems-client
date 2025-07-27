@@ -1,84 +1,106 @@
-import React, { useEffect, useState } from "react";
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar, { NavItem } from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
+import Loader from "../../components/Loader";
 import { HomeIcon, LogOut, UserIcon, Users2 } from "lucide-react";
 import { COMPANY_NAME } from "../../constants";
 import { api } from "../../utils/api";
+import { AuthContext } from "../../context/AuthContext";
 
 const DashboardLayout: React.FC = () => {
-  const userRole = localStorage.getItem("userRole");
-  const username = localStorage.getItem("userName");
+  const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(true);
   const [userFullName, setUserFullName] = useState("");
   const [navItems, setNavItems] = useState<NavItem[]>([]);
   const [profilePath, setProfilePath] = useState("");
+  const { role, token, username } = useContext(AuthContext);
 
-  const navigate = useNavigate();
+  console.log(role);
+  console.log(username);
+  console.log(token);
 
-  // ✅ Fetch full name on mount
   useEffect(() => {
-    const getUserName = async () => {
+    const init = async () => {
+      
+      if (!role || !username) {
+        navigate("/login");
+        return;
+      }
+
       try {
+        // Fetch full name
         const response = await api(`/user/fullName/${username}`, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
-        
-        setUserFullName(`${response.firstName} ${response.lastName}`);        
+
+        setUserFullName(`${response.firstName} ${response.lastName}`);
+
+        // Set nav and profile path
+        const items: NavItem[] = [];
+
+        if (role === "ADMIN") {
+          items.push(
+            { label: "Dashboard", path: "/admin/dashboard", icon: <HomeIcon />},
+            { label: "Employees", path: "/admin/employee-management", icon: <Users2 /> },
+            { label: "Profile", path: "/admin/profile", icon: <UserIcon /> }
+          );
+          setProfilePath("/admin/profile");
+        } else if (role === "USER") {
+          items.push(
+            { label: "Dashboard", path: "/user/dashboard", icon: <HomeIcon /> },
+            { label: "Profile", path: "/user/profile", icon: <UserIcon /> }
+          );
+          setProfilePath("/user/profile");
+        } else if (role === "EMPLOYEE") {
+          items.push(
+            { label: "Dashboard", path: "/employee/dashboard", icon: <HomeIcon /> },
+            { label: "Profile", path: "/employee/profile", icon: <UserIcon /> }
+          );
+          setProfilePath("/employee/profile");
+        }
+
+        setNavItems(items);
       } catch (err) {
-        console.error("Failed to fetch user full name", err);
+        console.error("Setup failed:", err);
+        navigate("/login");
+      } finally {
+        setLoading(false);
       }
     };
 
-    getUserName();
-  }, [username]);
+    init();
+  }, [navigate]);
 
-  // ✅ Setup nav items based on role
-  useEffect(() => {
-    const items: NavItem[] = [{ label: "Dashboard", path: "/dashboard", icon: <HomeIcon /> }];
 
-    if (userRole === "ADMIN") {
-      setProfilePath("/admin/profile");
-      items.push(
-        { label: "Employees", path: "/admin/employee-management", icon: <Users2 /> },
-        { label: "Profile", path: "/admin/profile", icon: <UserIcon /> }
-      );
-    } else if (userRole === "USER") {
-      setProfilePath("/user/profile");
-      items.push({ label: "Profile", path: "/user/profile", icon: <UserIcon /> });
-    } else if (userRole === "EMPLOYEE") {
-      setProfilePath("/employee/profile");
-      items.push({ label: "Profile", path: "/employee/profile", icon: <UserIcon /> });
-    }
-
-    setNavItems(items);
-  }, [userRole]);
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen w-screen bg-light">
+        <Loader size={48} color="text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen w-screen">
-      {/* Sidebar */}
       <Sidebar
         navItems={navItems}
         logoutLabel="Sign out"
         logoutIcon={<LogOut className="w-4 h-4" />}
       />
-
-      {/* Main Content */}
       <div className="flex flex-col flex-1 bg-light overflow-hidden">
         <div className="h-16">
           <Navbar
             companyName={COMPANY_NAME}
             userName={userFullName}
-            notifications={["Test 1", "Test 2"]}
             onUserClick={() => navigate(profilePath)}
-            onNotificationClick={() => console.log("Notifications clicked")}
           />
         </div>
-
         <div className="flex-1 overflow-y-auto p-6">
           <Outlet />
         </div>

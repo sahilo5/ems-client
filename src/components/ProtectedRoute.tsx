@@ -1,22 +1,26 @@
-// components/ProtectedRoute.tsx
+import { Navigate, useLocation } from "react-router-dom";
+import { JSX, useContext } from "react";
+import Loader from "./Loader";
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
-type ProtectedRouteProps = {
-  allowedRoles: string[];
-  children: React.ReactNode;
-};
+const ProtectedRoute = ({ children, allowedRoles }: { children: JSX.Element; allowedRoles: string[] }) => {
+  const { isAuthenticated, role, loading } = useContext(AuthContext);
+  const location = useLocation();
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles, children }) => {
-  const token = localStorage.getItem("token");
-  const userRole = localStorage.getItem("userRole");
-
-  if (!token || !userRole || !allowedRoles.includes(userRole)) {
-    localStorage.clear();
-    return <Navigate to="/login" replace />;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader size={48} color="text-primary" />
+      </div>
+    );
   }
 
-  return <>{children}</>;
+  if (!isAuthenticated || !allowedRoles.includes(role || "")) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  return children;
 };
 
 export default ProtectedRoute;

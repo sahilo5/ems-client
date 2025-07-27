@@ -1,9 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavItem } from "../components/Sidebar";
 import {CalendarCheck, DollarSign, Users} from "lucide-react";
 import Card from "../components/Card";
-
-const userRole = localStorage.getItem("userRole");
 
 const Dashboard: React.FC  = () => {
 

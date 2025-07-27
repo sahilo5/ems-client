@@ -4,6 +4,8 @@ import Form from "../../components/Form";
 import Button from "../../components/Button";
 import { useLoginForm } from "./LoginFrom.hooks";
 import { COMPANY_NAME } from "../../constants";
+import ForgotPassword from "../forgotPassword/ForgotPassword";
+import MiniWindow from "../../components/MiniWindow";
 
 const LoginForm = () => {
   const {
@@ -13,7 +15,9 @@ const LoginForm = () => {
     setPassword,
     handleRegister,
     onLoginSubmit,
-    errors
+    errors,
+    open,
+    setOpen
   } = useLoginForm();
 
   return (
@@ -64,10 +68,15 @@ const LoginForm = () => {
         <button
           type="button"
           className="text-sm text-primary hover:underline transition duration-150"
-          onClick={() => console.log("Forgot Password clicked")}
+          onClick={() => setOpen(true)}
         >
           Forgot Password?
         </button>
+
+      <MiniWindow isOpen={open} onClose={() => setOpen(false)} size="small">
+          <ForgotPassword/>
+      </MiniWindow>
+      
       </div>
       <div className="mt-6 text-center text-sm text-muted">
   &copy; {new Date().getFullYear()} <span className="font-semibold text-primary">{COMPANY_NAME}</span>. All rights reserved.

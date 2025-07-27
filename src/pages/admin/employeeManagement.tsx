@@ -1,30 +1,43 @@
-import React from "react";
+import React, { useContext } from "react";
 import { api } from "../../utils/api";
 import Button from "../../components/Button";
+import { AuthContext } from "../../context/AuthContext";
 
 
-   const handleHealthCheck = async () => {
-    try {
-        const response = await api("/admin/health", {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                "Content-Type": "application/json", // Optional, but often needed
-            },
-           });
-           console.log(response);
+const handleHealthCheck = async () => {
+  const { role, token, username, isAuthenticated } = useContext(AuthContext);
+  try {
+    let userRole = role;
+    let healthPath: string = "";
 
-    } catch (err: any) {
-     
+    if (userRole === "ADMIN"){
+      healthPath = "/admin/health";
+    }else if(userRole === "EMPLOYEE"){
+      healthPath = "/employee/health";
+    }else{
+      healthPath = "/user/health";
     }
-  };
+
+    const response = await api(healthPath, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json", 
+      },
+    });
+    alert(response.text);
+
+  } catch (err: any) {
+    
+  }
+};
 const EmpoloyeeManagement = () => <div className="space-y-2">
-    <h1 className="text-xl">Empoloyee Management Page</h1>
-    <Button variant="secondary" onClick={handleHealthCheck} className="w-full">
-          Health Check
-        </Button>
+  <h1 className="text-xl">Empoloyee Management Page</h1>
+  <Button variant="secondary" onClick={handleHealthCheck} className="w-full">
+    Health Check
+  </Button>
 </div>;
- 
+
 
 
 

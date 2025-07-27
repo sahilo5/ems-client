@@ -5,9 +5,20 @@ type MiniWindowProps = {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  size?: "default" | "small"; // new prop
 };
 
-const MiniWindow: React.FC<MiniWindowProps> = ({ isOpen, onClose, children }) => {
+const sizeStyles: Record<NonNullable<MiniWindowProps["size"]>, string> = {
+  default: "w-[70%] max-h-[90vh]",
+  small: "w-full max-w-md max-h-[90vh]",
+};
+
+const MiniWindow: React.FC<MiniWindowProps> = ({
+  isOpen,
+  onClose,
+  children,
+  size = "default",
+}) => {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -24,7 +35,7 @@ const MiniWindow: React.FC<MiniWindowProps> = ({ isOpen, onClose, children }) =>
       onClick={onClose}
     >
       <div
-        className="relative w-[70%] max-h-[90vh] bg-white p-6 rounded-xl shadow-lg overflow-y-auto"
+        className={`relative bg-white p-6 rounded-xl shadow-lg overflow-y-auto ${sizeStyles[size]}`}
         onClick={(e) => e.stopPropagation()}
       >
         <button
