@@ -41,22 +41,22 @@ export const Tabs: React.FC<TabsProps> = ({ defaultIndex = 0, children }) => {
     <TabsContext.Provider value={{ activeIndex, setActiveIndex }}>
       <div className="w-full">
         {/* Tab Buttons */}
-        <div className="flex space-x-4 border-b border-light mb-4">
+        <div className="flex space-x-2 border-b border-gray-200 mb-1">
           {labels.map(({ index, label }) => (
             <button
               key={index}
               onClick={() => setActiveIndex(index)}
-              className={`px-4 py-2 text-sm font-medium ${
+              className={`px-4 py-2 text-sm font-medium rounded-t-md transition-all duration-200 ${
                 activeIndex === index
-                  ? "text-primary border-b-2 border-primary"
-                  : "text-gray-500 hover:text-primary"
+                  ? "bg-accent text-light border-b-2 border-primary shadow-md"
+                  : "text-accent hover:text-accent-500 hover:bg-gray-200"
               }`}
             >
               {label}
             </button>
           ))}
         </div>
-
+  
         {/* Tab Content */}
         <div>
           {validChildren.map((child) =>
@@ -66,6 +66,7 @@ export const Tabs: React.FC<TabsProps> = ({ defaultIndex = 0, children }) => {
       </div>
     </TabsContext.Provider>
   );
+  
 };
 
 // Tab Component

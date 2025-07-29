@@ -37,10 +37,10 @@ function Browse<T extends Record<string, any>>({
   return (
     <div className="bg-white shadow-md">
       {/* Header */}
-      <div className="p-4 bg-accent border-b border-light">
+      <div className="p-2 bg-accent border-b border-light">
         <div className="flex justify-between items-center flex-wrap gap-4">
           <div>
-            {title && <h2 className="text-xl font-bold text-light">{title}</h2>}
+            {title && <h2 className="text-2xl font-bold text-light">{title}</h2>}
             {subtitle && <p className="text-sm text-light">{subtitle}</p>}
           </div>
 

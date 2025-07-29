@@ -40,7 +40,7 @@ const Navbar: React.FC<NavbarProps> = ({
   }, []);
 
   return (
-    <header className="w-full h-15 flex items-center justify-between px-6 bg-white shadow border-b border-light relative">
+    <header className="w-full h-16 flex items-center justify-between px-6 bg-white shadow border-b border-light relative">
       {/* Logo / Title */}
       <div className="text-xl font-semibold text-dark">{companyName}</div>
 

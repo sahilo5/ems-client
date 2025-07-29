@@ -101,7 +101,7 @@ const DashboardLayout: React.FC = () => {
             onUserClick={() => navigate(profilePath)}
           />
         </div>
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-2">
           <Outlet />
         </div>
       </div>
