@@ -1,17 +1,19 @@
 import React from "react";
 import Form from "../../components/Form";
-import { useRegisterForm } from "./RegisterForm.hooks";
+import { useAddNewUser } from "./AddNewUser.hooks";
 import Button from "../../components/Button";
-import Input from "../../components/Input"; // import for direct use
-import { COMPANY_NAME } from "../../constants";
 
-const RegisterForm = () => {
+type AddUserProps = {      
+  onClose: () => void; 
+};
+
+const AddUser: React.FC<AddUserProps> = ({  onClose }) => {
   const {
     firstName,
     setFirstName,
     lastName,
     setLastName,
-    email,
+    email, 
     setEmail,
     phoneNumber,
     setPhoneNumber,
@@ -21,16 +23,15 @@ const RegisterForm = () => {
     setPassword,
     confirmPassword,
     setConfirmPassword,
-    agree,
-    setAgree,
-    handleLogin,
     onSubmit,
-    errors
-  } = useRegisterForm();
+    errors,
+    
+  } = useAddNewUser(onClose);
 
   return (
-    <div className="max-w-md w-full bg-light shadow-lg p-6 rounded-2xl border border-light">
-      <h2 className="text-2xl font-bold text-center mb-6 text-dark">Register</h2>
+    <>
+      
+      <h2 className="text-2xl font-bold text-center mb-6 text-dark">Add New User</h2>
 
       {/* Rest of the Form */}
       <Form
@@ -104,32 +105,18 @@ const RegisterForm = () => {
             onChange: setConfirmPassword,
             placeholder: "Confirm a password",
             error: errors.confirmPasswordError,
-          },
-          {
-            type: "checkbox",
-            name: "agree",
-            label: "I agree to the terms",
-            checked: agree,
-            onChange: setAgree,
-            error: errors.agreeError,
-          },
+          }
         ]}
       />
 
       {/* Buttons */}
       <div className="mt-6 flex justify-between space-x-4">
         <Button variant="primary" onClick={onSubmit} className="w-full">
-          Register
-        </Button>
-        <Button variant="secondary" onClick={handleLogin} className="w-full">
-          Login
+          Add
         </Button>
       </div>
-      <div className="mt-6 text-center text-sm text-muted">
-  &copy; {new Date().getFullYear()} <span className="font-semibold text-primary">{COMPANY_NAME}</span>. All rights reserved.
-</div>
-    </div>
+      </>
   );
 };
 
-export default RegisterForm;
+export default AddUser;

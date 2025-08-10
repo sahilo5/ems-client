@@ -13,12 +13,14 @@ export type NavItem = {
   label: string;
   path: string;
   icon?: React.ReactNode;
+  onClick?: () => void;
 };
 
 type SidebarProps = {
   navItems?: NavItem[];
   logoutLabel?: string;
   logoutIcon?: React.ReactNode;
+  onClick?: () => void;
 };
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -69,18 +71,17 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const handleCancel = () => {
-    console.log("Cancelled");
     setIsOpen(false);
   };
 
   return (
     <div
       className={`${
-        collapsed ? "w-16" : "w-64"
+        collapsed ? "w-16" : "w-56"
       } h-full bg-primary text-white shadow-lg flex flex-col transition-all duration-300`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-light">
+      <div className="flex items-center justify-between p-3 border-b border-light">
         <button
           onClick={() => setCollapsed((prev) => !prev)}
           className="p-1 hover:bg-gray-200 rounded-md group"
@@ -96,14 +97,18 @@ const Sidebar: React.FC<SidebarProps> = ({
       <nav className="flex-1 p-2 space-y-1">
         {effectiveNavItems.map((item) => (
           <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) =>
-              `flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium hover:bg-secondary transition ${
-                isActive ? "bg-secondary text-white" : "text-light"
-              }`
-            }
-          >
+          key={item.path}
+          to={item.path}
+          onClick={() => {
+            if (typeof item.onClick === "function") item.onClick();
+          }}
+          className={({ isActive }) =>
+            `flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium hover:bg-secondary transition ${
+              isActive ? "bg-secondary text-white" : "text-light"
+            }`
+          }
+        >
+        
             {item.icon}
             {!collapsed && <span>{item.label}</span>}
           </NavLink>
@@ -111,7 +116,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       </nav>
 
       {/* Logout Button */}
-      <div className="p-4 border-t border-light">
+      <div className="p-2 border-t border-light">
         <button
           onClick={() => setIsOpen(true)}
           className="w-full flex items-center space-x-2 p-2 hover:bg-gray-200 rounded-md group text-sm"

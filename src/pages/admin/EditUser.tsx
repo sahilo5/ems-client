@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Form from "../../components/Form";
-import { useRegisterForm } from "./RegisterForm.hooks";
 import Button from "../../components/Button";
-import Input from "../../components/Input"; // import for direct use
-import { COMPANY_NAME } from "../../constants";
+import { useEditUser } from "./EditUser.hooks";
 
-const RegisterForm = () => {
+type EditUserProps = {
+  userData: any;       
+  onClose: () => void; 
+};
+
+const EditUser: React.FC<EditUserProps> = ({ userData, onClose }) => {
   const {
     firstName,
     setFirstName,
@@ -17,26 +20,27 @@ const RegisterForm = () => {
     setPhoneNumber,
     username,
     setUsername,
-    password,
-    setPassword,
-    confirmPassword,
-    setConfirmPassword,
-    agree,
-    setAgree,
-    handleLogin,
     onSubmit,
-    errors
-  } = useRegisterForm();
+    errors,
+    loadUserData
+  } = useEditUser(onClose);
+
+  // Load data into form on mount
+  useEffect(() => {
+    if (userData) {
+      loadUserData(userData);
+    }
+  }, [userData]);
 
   return (
-    <div className="max-w-md w-full bg-light shadow-lg p-6 rounded-2xl border border-light">
-      <h2 className="text-2xl font-bold text-center mb-6 text-dark">Register</h2>
+    <>
+      <h2 className="text-2xl font-bold text-center mb-6 text-dark">
+        Edit User
+      </h2>
 
-      {/* Rest of the Form */}
       <Form
         className="mt-4"
         fields={[
-
           {
             group: true,
             fields: [
@@ -67,7 +71,7 @@ const RegisterForm = () => {
             value: email,
             onChange: setEmail,
             placeholder: "Your email",
-            error: errors.emailError, 
+            error: errors.emailError,
           },
           {
             type: "number",
@@ -86,50 +90,18 @@ const RegisterForm = () => {
             onChange: setUsername,
             error: errors.usernameError,
             placeholder: "Username",
-          },
-          {
-            type: "password",
-            name: "password",
-            label: "Password",
-            value: password,
-            onChange: setPassword,
-            placeholder: "Choose a password",
-            error: errors.passwordError,
-          },
-          {
-            type: "password",
-            name: "confirmPassword",
-            label: "Confirm Password",
-            value: confirmPassword,
-            onChange: setConfirmPassword,
-            placeholder: "Confirm a password",
-            error: errors.confirmPasswordError,
-          },
-          {
-            type: "checkbox",
-            name: "agree",
-            label: "I agree to the terms",
-            checked: agree,
-            onChange: setAgree,
-            error: errors.agreeError,
+            disabled:true
           },
         ]}
       />
 
-      {/* Buttons */}
       <div className="mt-6 flex justify-between space-x-4">
         <Button variant="primary" onClick={onSubmit} className="w-full">
-          Register
-        </Button>
-        <Button variant="secondary" onClick={handleLogin} className="w-full">
-          Login
+          Save Changes
         </Button>
       </div>
-      <div className="mt-6 text-center text-sm text-muted">
-  &copy; {new Date().getFullYear()} <span className="font-semibold text-primary">{COMPANY_NAME}</span>. All rights reserved.
-</div>
-    </div>
+    </>
   );
 };
 
-export default RegisterForm;
+export default EditUser;

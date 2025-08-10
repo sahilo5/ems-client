@@ -9,6 +9,7 @@ import { api } from "../../utils/api";
 import { AuthContext } from "../../context/AuthContext";
 
 const DashboardLayout: React.FC = () => {
+  
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
@@ -16,10 +17,6 @@ const DashboardLayout: React.FC = () => {
   const [navItems, setNavItems] = useState<NavItem[]>([]);
   const [profilePath, setProfilePath] = useState("");
   const { role, token, username } = useContext(AuthContext);
-
-  console.log(role);
-  console.log(username);
-  console.log(token);
 
   useEffect(() => {
     const init = async () => {
@@ -47,7 +44,7 @@ const DashboardLayout: React.FC = () => {
         if (role === "ADMIN") {
           items.push(
             { label: "Dashboard", path: "/admin/dashboard", icon: <HomeIcon />},
-            { label: "Employees", path: "/admin/employee-management", icon: <Users2 /> },
+            { label: "Employees", path: "/admin/employee-management", icon: <Users2 />},
             { label: "Profile", path: "/admin/profile", icon: <UserIcon /> }
           );
           setProfilePath("/admin/profile");
@@ -94,7 +91,7 @@ const DashboardLayout: React.FC = () => {
         logoutIcon={<LogOut className="w-4 h-4" />}
       />
       <div className="flex flex-col flex-1 bg-light overflow-hidden">
-        <div className="h-16">
+        <div className="h-14">
           <Navbar
             companyName={COMPANY_NAME}
             userName={userFullName}
