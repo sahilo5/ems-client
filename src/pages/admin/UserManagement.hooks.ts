@@ -8,7 +8,7 @@ export const useUserManagement = () => {
   const [loading, setLoading] = useState(false);
   const [UserData, setUserData] = useState([]);
   const [UsersWithRoleData, setUsersWithRoleData] = useState([]);
-  const { role, token, username } = useContext(AuthContext);
+  const { token } = useContext(AuthContext);
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -47,20 +47,19 @@ export const useUserManagement = () => {
   const handleUsersWithRoles = async () => {
     setLoading(true);
     try {
-      const response = await api(`/admin/getAllUsers`, {
+      const response = await api(`/admin/getAllUsersWithRoles`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
-
+  
       if (response.success) {
         const transformedData = response.data.map((user: any) => ({
           name: `${user.firstName} ${user.lastName}`,
           username: user.username,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
+          roles: user.roles || []
         }));
         setUsersWithRoleData(transformedData);
       } else {
@@ -72,6 +71,7 @@ export const useUserManagement = () => {
       setLoading(false);
     }
   };
+  
 
   const handleUpdateUser = async (userData: any) => {
     setLoading(true);
@@ -107,7 +107,6 @@ export const useUserManagement = () => {
     }
 
     const usernames = selectedUsers.map(user => user.username);
-    console.log(usernames);
     setLoading(true);
     try {
       const response = await api(`/admin/deleteUsers`, {
@@ -156,7 +155,7 @@ export const useUserManagement = () => {
   const UserWithRoleColumnHeaders: { header: string; accessor: keyof typeof UserData[0] }[] = [
     { header: "Name", accessor: "name" },
     { header: "Username", accessor: "username" },
-    { header: "Role", accessor: "role" },
+    { header: "Role", accessor: "roles" },
   ];
 
   return {

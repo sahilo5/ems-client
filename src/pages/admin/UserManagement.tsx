@@ -9,6 +9,7 @@ import MiniWindow from "../../components/MiniWindow";
 import EditUser from "./EditUser";
 import Popup from "../../components/Popup";
 import AddUser from "./AddNewUser";
+import AssignRole from "./AssignRole";
 
 const UserManagement = () => {
   // For Add New User
@@ -17,6 +18,10 @@ const UserManagement = () => {
   // For Edit User
   const [openEdit, setOpenEdit] = useState(false);
   const [editUserData, setEditUserData] = useState<any>(null);
+
+  // State for Assign Role
+  const [openAssignRole, setOpenAssignRole] = useState(false);
+  const [assignUserData, setAssignUserData] = useState<any>(null);
 
   const {
     UserData,
@@ -48,6 +53,12 @@ const UserManagement = () => {
                   variant="tertiary"
                   title="Assign Role"
                   disabled={selectedRows.length !== 1}
+                  onClick={
+                    () => {
+                      setAssignUserData(selectedRows[0]);
+                      setOpenAssignRole(true);
+                    }
+                  }
                 >
                   <span><CheckCheck className="size-5" /></span>
                 </Button>
@@ -129,7 +140,7 @@ const UserManagement = () => {
 
       {/* Add New User Window */}
       <MiniWindow isOpen={openAdd} onClose={() => setOpenAdd(false)} size="small">
-      <AddUser onClose={() => setOpenAdd(false)} />
+        <AddUser onClose={() => setOpenAdd(false)} />
       </MiniWindow>
 
       {/* Edit User Window */}
@@ -138,6 +149,17 @@ const UserManagement = () => {
           <EditUser userData={editUserData} onClose={() => setOpenEdit(false)} />
         )}
       </MiniWindow>
+
+      {/* Assign Role Window */}
+      <MiniWindow isOpen={openAssignRole} onClose={() => setOpenAssignRole(false)} size="small">
+        {assignUserData && (
+          <AssignRole
+            userData={assignUserData}
+            onClose={() => setOpenAssignRole(false)}
+          />
+        )}
+      </MiniWindow>
+
 
       {/* Delete Confirmation Popup */}
       <Popup

@@ -1,8 +1,8 @@
 import React from "react";
 import Dashboard from "../pages/Dashboard";
-import Profiles from "../pages/Profiles";
+import UserProfile from "../pages/UserProfile";
 
 export const userRoutes = [
   { path: "/user/dashboard", element: <Dashboard /> },
-  { path: "/user/profile", element: <Profiles /> },
+  { path: "/user/profile", element: <UserProfile /> },
 ];
