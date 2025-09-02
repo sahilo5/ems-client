@@ -93,7 +93,7 @@ export const useUserManagement = () => {
         showToast(response.message, "error");
       }
     } catch (error) {
-      showToast("Error updating user", "error");
+      showToast(error.message, "error");
     } finally {
       setLoading(false);
     }
@@ -125,7 +125,7 @@ export const useUserManagement = () => {
       }
       setSelectedUsers([]);
     } catch (error) {
-      showToast(error, "error");
+      showToast(error.message, "error");
       setSelectedUsers([]);
     } finally {
       setLoading(false);

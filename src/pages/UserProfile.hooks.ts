@@ -17,6 +17,7 @@ export const useUserProfile = (username: string | null, token: string | null) =>
   const [loading, setLoading] = useState(false);
   const { role } = useContext(AuthContext);
   const { showToast } = useToast();
+  const [openForgotPassword, setOpenForgotPassword] = useState(false);
 
   const fetchProfile = async () => {
     setLoading(true);
@@ -57,5 +58,5 @@ export const useUserProfile = (username: string | null, token: string | null) =>
     console.log("Edit Profile clicked");
   };
 
-  return { profile, loading, handleEdit, refetch: fetchProfile };
+  return { profile, loading, handleEdit, refetch: fetchProfile,setOpenForgotPassword,openForgotPassword };
 };

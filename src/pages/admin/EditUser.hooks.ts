@@ -13,7 +13,6 @@ export const useEditUser = (onClose: () => void) => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const { token } = useContext(AuthContext);
   const { showToast } = useToast();
-  const { handleGetAllUsers } = useUserManagement();
 
   const loadUserData = (user: any) => {
     setFirstName(user.name?.split(" ")[0] || "");
@@ -60,17 +59,16 @@ export const useEditUser = (onClose: () => void) => {
     };
 
     try {
-      const response = await api(`/admin/updateUser/${username}`, {
+      const response = await api(`/user/updateUser/${username}`, {
         method: "POST",
         body: JSON.stringify(payload),
         headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
 
       showToast(response.message || "User updated successfully", "success");
-      handleGetAllUsers();
       onClose();
       resetForm();
     } catch (err: any) {

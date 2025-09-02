@@ -42,7 +42,9 @@ const Navbar: React.FC<NavbarProps> = ({
   return (
     <header className="w-full h-14 flex items-center justify-between px-4 bg-accent shadow border-l border-light relative">
       {/* Logo / Title */}
-      <div className="text-2xl font-bold text-light">{companyName}</div>
+      <div className="text-xl sm:text-2xl font-bold text-light truncate">
+        {companyName}
+      </div>
 
       {/* Right Side */}
       <div className="flex items-center space-x-4">
@@ -80,7 +82,10 @@ const Navbar: React.FC<NavbarProps> = ({
           onClick={onUserClick}
         >
           <UserCircle2 className="w-6 h-6 text-light" />
-          <span className="text-md text-light">{userName}</span>
+          {/* Hide username on mobile, show on sm+ */}
+          <span className="hidden sm:inline text-md text-light">
+            {userName}
+          </span>
         </div>
       </div>
     </header>

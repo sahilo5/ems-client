@@ -5,21 +5,23 @@ import { ProportionsIcon, UserCircle, UserCircle2 } from "lucide-react";
 import MiniWindow from "../components/MiniWindow";
 import EditUser from "./admin/EditUser";
 import Button from "../components/Button";
+import ForgotPassword from "./forgotPassword/ForgotPassword";
+import Loader from "../components/Loader";
 
 
 const UserProfile = () => {
   const { token, username } = useContext(AuthContext);
-  const { profile, loading, refetch: fetchProfile  } = useUserProfile(username, token);
+  const { profile, loading, refetch: fetchProfile,setOpenForgotPassword, openForgotPassword } = useUserProfile(username, token);
 
   // For Edit User
   const [openEdit, setOpenEdit] = useState(false);
   const [editUserData, setEditUserData] = useState<any>(null);
 
-  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (loading) return <div className="text-center py-10"><Loader size={48} color="text-primary" /></div>;
   if (!profile) return <div className="text-center py-10">No user found</div>;
 
   return (
-    <div className="max-w-sm mx-auto bg-white rounded-lg shadow-lg p-6 text-center">
+    <div className="max-w-sm mx-auto bg-white rounded-lg shadow-lg p-6 text-center mt-2">
 
       {/* Avatar */}
       <div className="flex justify-center mb-4">
@@ -33,7 +35,7 @@ const UserProfile = () => {
 
       {/* Roles */}
 
-      <div className="flex flex-wrap justify-center gap-2 mb-6">
+      <div className="flex flex-wrap justify-center gap-2 m-3">
 
         <span
           key={profile.roles}
@@ -46,7 +48,7 @@ const UserProfile = () => {
 
 
       {/* Profile details */}
-      <div className="text-left space-y-2 border-t pt-4">
+      <div className="text-left space-y-3 border-t pt-4">
         <div className="flex justify-between text-sm">
           <span className="font-semibold text-secondary">Username</span>
           <span>{profile.username}</span>
@@ -65,6 +67,7 @@ const UserProfile = () => {
         </div>
       </div>
 
+      <div className="mt-6 flex justify-between space-x-4">
       {/* Edit Button */}
       <Button
         variant="primary"
@@ -77,10 +80,24 @@ const UserProfile = () => {
         Edit Profile
       </Button>
 
+      <Button
+        variant="secondary"
+        title="Change Password"
+        onClick={() => setOpenForgotPassword(true)}
+      >
+        Change Password
+      </Button>
+
+      </div>
+
       <MiniWindow isOpen={openEdit} onClose={() => {setOpenEdit(false); fetchProfile();}} size="small">
         {editUserData && (
           <EditUser userData={editUserData} onClose={() => setOpenEdit(false)} />
         )}
+      </MiniWindow>
+
+      <MiniWindow isOpen={openForgotPassword} onClose={() => setOpenForgotPassword(false)} size="small">
+          <ForgotPassword title="Change Password"/>
       </MiniWindow>
     </div>
   );

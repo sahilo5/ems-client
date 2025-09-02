@@ -74,7 +74,7 @@ const LoginForm = () => {
         </button>
 
       <MiniWindow isOpen={open} onClose={() => setOpen(false)} size="small">
-          <ForgotPassword/>
+          <ForgotPassword title="Forgot Password"/>
       </MiniWindow>
       
       </div>

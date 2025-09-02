@@ -62,7 +62,10 @@ const Form: React.FC<FormProps> = ({
     // Check if it's a grouped row
     if ("group" in field && field.group) {
       return (
-        <div key={idx} className="flex gap-4">
+        <div 
+          key={idx} 
+          className="flex flex-col md:flex-row gap-4 w-full"
+        >
           {field.fields.map((subField, subIdx) => (
             <div key={subIdx} className="w-full">
               {renderField(subField, subIdx)}
@@ -71,6 +74,7 @@ const Form: React.FC<FormProps> = ({
         </div>
       );
     }
+    
   
     // Common wrapper to show error below input
     const commonWrapper = (inputElement: React.ReactNode) => (

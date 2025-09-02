@@ -3,7 +3,13 @@ import Form from "../../components/Form";
 import { useForgotPassword } from "./ForgotPassword.hooks";
 import Loader from "../../components/Loader";
 
-const ForgotPassword = () => {
+type ForgotPasswordProps = {
+    title: string;
+}
+
+const ForgotPassword : React.FC<ForgotPasswordProps> = ({
+    title, 
+  })=> {
 
     const [step, setStep] = useState(1);
     const {
@@ -133,7 +139,7 @@ const ForgotPassword = () => {
             }
             <h2 className="text-2xl font-bold text-center mb-6 text-dark">
                 {step === 1
-                    ? "Forgot Password"
+                    ? title
                     : step === 2
                         ? "Verify OTP"
                         : "Reset Password"}
