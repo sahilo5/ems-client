@@ -1,11 +1,13 @@
 // src/pages/attendance/AttendanceCalendar.tsx
-import React from "react";
+import React, { useEffect } from "react";
 import dayjs from "dayjs";
 import { useAttendanceCalendar, AttendanceDay } from "./AttendanceSummary.hooks";
+import Loader from "../../components/Loader";
 
 type Props = {
   username: string;
   initialMonth?: string; // "YYYY-MM"
+  refreshKey?:number;
 };
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -17,11 +19,12 @@ const statusColors: Record<string, string> = {
   LATE: "bg-yellow-300",
   LEAVE: "bg-orange-600",
   HOLIDAY: "bg-gray-100",
+  UNMARKED: "bg-gray-300",
 };
 
-const AttendanceCalendar: React.FC<Props> = ({ username, initialMonth }) => {
-  const { attendanceData, summary, loading, month, setMonth, daysInMonth } =
-    useAttendanceCalendar(username, initialMonth);
+const AttendanceCalendar: React.FC<Props> = ({ username, initialMonth, refreshKey  }) => {
+  const { employeeFullName,attendanceData, summary, loading, month, setMonth, daysInMonth,holidays } =
+    useAttendanceCalendar(username, initialMonth,refreshKey);
 
   // map for O(1) lookup
   const recordMap = new Map<string, AttendanceDay>();
@@ -75,37 +78,41 @@ const AttendanceCalendar: React.FC<Props> = ({ username, initialMonth }) => {
               const dateIso = dayjs(month).date(i + 1).format("YYYY-MM-DD");
               const record = recordMap.get(dateIso);
 
-              // determine status: if record exist => record.status; else if Sunday or recurring holiday => HOLIDAY ; else ABSENT
+              // determine status
               const isSunday = dayjs(dateIso).day() === 0;
+              const holiday = holidays.find((h) => h.date === dateIso);
+
               const status = record
                 ? record.status
-                : isSunday
-                ? "HOLIDAY"
-                : "ABSENT";
+                : isSunday || holiday
+                  ? "HOLIDAY"
+                  : "ABSENT";
 
               const colorClass = statusColors[status] ?? "bg-white";
 
               const tooltip = record
-                ? `Check-In: ${record.checkIn ?? "-"} | Check-Out: ${
-                    record.checkOut ?? "-"
-                  } | Hours: ${record.totalHours ?? 0}`
+                ? `Check-In: ${record.checkIn ?? "-"} | Check-Out: ${record.checkOut ?? "-"
+                } | Hours: ${record.totalHours ?? 0}`
                 : isSunday
-                ? "Sunday / Holiday"
-                : "No record";
+                  ? "Sunday / Holiday"
+                  : holiday
+                    ? holiday.name
+                    : "No record";
+
 
               return (
                 <div
                   key={dateIso}
                   title={tooltip}
-                  className={`h-20 min-h-[72px] rounded-lg cursor-pointer flex flex-col justify-between p-2 text-xl border ${
-                    colorClass
-                  } hover:brightness-95 transition-shadow`}
+                  className={`h-20 min-h-[72px] rounded-lg cursor-pointer flex flex-col justify-between p-2 text-xl border ${colorClass
+                    } hover:brightness-95 transition-shadow`}
                 >
                   <div className="flex justify-between items-start">
                     <span className="text-md font-semibold">{i + 1}</span>
                   </div>
                   <div className="text-[12px] w-full text-left">
-                    <div>{record ? record.status : isSunday ? "Holiday" : "Absent"}</div>
+                    <div>{record ? record.status : isSunday ? "Sunday" : holiday
+                    ? holiday.name: "Absent"}</div>
                   </div>
                 </div>
               );
@@ -116,10 +123,12 @@ const AttendanceCalendar: React.FC<Props> = ({ username, initialMonth }) => {
 
       {/* RIGHT: Summary */}
       <div className="w-full md:w-1/3 border-2 rounded-lg p-4 bg-white shadow-sm border-accent">
-        <h4 className="text-lg font-semibold mb-2">{username}</h4>
+        <h4 className="text-lg font-semibold mb-2">{employeeFullName}</h4>
         {loading ? (
-          <div className="text-sm text-gray-500">Loading...</div>
-        ) : (
+              <div className="flex items-center justify-center bg-light">
+                <Loader size={48} color="text-primary" />
+              </div>
+            ) : (
           <>
             <div className="text-sm mb-3">
               <div>

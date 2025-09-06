@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import Form from "../../components/Form";
 import Button from "../../components/Button";
 import Dropdown from "../../components/Dropdown";
 import { useMarkAttendance } from "./MarkAttendance.hooks";
 import AttendanceCalendar from "./AttendanceSummary";
+import { useAttendanceCalendar } from "./AttendanceSummary.hooks";
+import TimeInput from "../../components/TimeInput";
 
 const MarkAttendance = () => {
   const {
@@ -24,6 +26,16 @@ const MarkAttendance = () => {
     errors,
     loading,
   } = useMarkAttendance();
+
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const success = await onSubmitAttendance();
+    if (success) {
+      setRefreshKey((prev) => prev + 1); // 🔄 bump key to trigger reload
+    }
+  };
 
   return (
     <div className="w-full bg-gray-200 shadow-lg p-4 rounded-2xl border border-gray-200 mx-auto">
@@ -51,10 +63,7 @@ const MarkAttendance = () => {
       </div>
 
       <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSubmitAttendance();
-        }}
+        onSubmit={handleSubmit}
         className="flex flex-col md:flex-row gap-4 items-end"
       >
         {/* Employee Dropdown */}
@@ -103,34 +112,22 @@ const MarkAttendance = () => {
           // Checkin & Checkout inputs for Update
           <>
             <div className="w-full md:w-1/4">
-              <Form
-                fields={[
-                  {
-                    type: "text",
-                    name: "checkin",
-                    label: "Check-In (HH:mm)",
-                    value: checkin,
-                    onChange: setCheckin,
-                    error: errors.timeError,
-                    placeholder: "09:30",
-                  },
-                ]}
+              <TimeInput
+                label="Check-In"
+                value={checkin}
+                onChange={setCheckin}
+                error={errors.timeError}
               />
             </div>
+
             <div className="w-full md:w-1/4">
-              <Form
-                fields={[
-                  {
-                    type: "text",
-                    name: "checkout",
-                    label: "Check-Out (HH:mm)",
-                    value: checkout,
-                    onChange: setCheckout,
-                    placeholder: "18:00",
-                  },
-                ]}
+              <TimeInput
+                label="Check-Out"
+                value={checkout}
+                onChange={setCheckout}
               />
             </div>
+
           </>
         )}
 
@@ -152,7 +149,8 @@ const MarkAttendance = () => {
           </Button>
         </div>
       </form>
-      {username && <AttendanceCalendar username={username} />}
+      {username &&
+        <AttendanceCalendar username={username} refreshKey={refreshKey} />}
     </div>
   );
 };

@@ -13,7 +13,11 @@ const ShowQrCode = () => {
       <h2 className="text-2xl font-bold text-dark mb-4">Attendance QR Code</h2>
 
       <div className="text-center">
-      {loading && <p>Loading...</p>}
+      {loading && (
+              <div className="flex items-center justify-center bg-light">
+                <Loader size={48} color="text-primary" />
+              </div>
+            )}
       {qrToken && (
         <>
           <p className="text-sm text-gray-500">

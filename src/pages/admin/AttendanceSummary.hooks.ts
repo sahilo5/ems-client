@@ -1,4 +1,3 @@
-// src/pages/attendance/AttendanceSummary.hooks.tsx
 import { useState, useEffect, useContext } from "react";
 import dayjs from "dayjs";
 import { api } from "../../utils/api";
@@ -7,7 +6,7 @@ import { useToast } from "../../components/ToastProvider";
 
 export type AttendanceDay = {
   date: string; // "YYYY-MM-DD"
-  checkIn?: string; // "HH:mm:ss" or "HH:mm"
+  checkIn?: string;
   checkOut?: string;
   totalHours?: number;
   status: "PRESENT" | "ABSENT" | "HALF_DAY" | "LATE" | "LEAVE";
@@ -23,35 +22,33 @@ type Summary = {
   totalHours: number;
 };
 
+type Holiday = { date: string; name: string };
+
 type UseAttendanceCalendarResult = {
+  employeeFullName: string;
   attendanceData: AttendanceDay[];
   summary: Summary;
   loading: boolean;
-  month: string; // "YYYY-MM"
+  month: string;
   setMonth: (m: string) => void;
   daysInMonth: number;
+  holidays: Holiday[];
 };
-
-const DEFAULT_RECURRING_HOLIDAYS = [
-  "01-26", // Republic Day
-  "08-15", // Independence
-  "10-02", // Gandhi Jayanti
-  "01-01", // New Year
-];
 
 export const useAttendanceCalendar = (
   username: string,
   initialMonth?: string,
-  recurringHolidayMMDDs: string[] = DEFAULT_RECURRING_HOLIDAYS
+  refreshKey?: number
 ): UseAttendanceCalendarResult => {
   const { token } = useContext(AuthContext);
   const { showToast } = useToast();
 
-  // month format: "YYYY-MM"
   const defaultMonth = initialMonth ?? dayjs().format("YYYY-MM");
   const [month, setMonth] = useState<string>(defaultMonth);
   const [attendanceData, setAttendanceData] = useState<AttendanceDay[]>([]);
+  const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [loading, setLoading] = useState(false);
+  const [employeeFullName, setEmployeeFullName] = useState("");
 
   const [summary, setSummary] = useState<Summary>({
     workingDays: 0,
@@ -65,11 +62,29 @@ export const useAttendanceCalendar = (
 
   const daysInMonth = dayjs(month).daysInMonth();
 
-  // helper: check recurring holiday by MM-DD (works every year)
-  const isRecurringHoliday = (dateIso: string) => {
-    const mmdd = dayjs(dateIso).format("MM-DD");
-    return recurringHolidayMMDDs.includes(mmdd);
+  /** fetch holidays from settings */
+  const fetchHolidays = async () => {
+    try {
+      const res = await api("/admin/settings/1", {
+        method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+      });
+      if (res?.success && res.data?.data) {
+        const parsed: Holiday[] = JSON.parse(res.data.data);
+        setHolidays(parsed);
+      }
+    } catch (err: any) {
+      showToast(err?.message || "Failed to fetch holidays", "error");
+    }
   };
+
+  useEffect(() => {
+    fetchHolidays();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     async function fetchAttendance() {
@@ -88,6 +103,18 @@ export const useAttendanceCalendar = (
       }
 
       setLoading(true);
+
+      // Fetch full name
+      const fullNameRespone = await api(`/user/fullName/${username}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      setEmployeeFullName(`${fullNameRespone.firstName} ${fullNameRespone.lastName}`);
+  
       try {
         const start = dayjs(month).startOf("month").format("YYYY-MM-DD");
         const end = dayjs(month).endOf("month").format("YYYY-MM-DD");
@@ -102,10 +129,7 @@ export const useAttendanceCalendar = (
         });
 
         if (response && response.success) {
-          // API returns an array of day objects (for days with records). We'll transform to a map.
           const data: AttendanceDay[] = response.data || [];
-
-          // Normalize: ensure dates are "YYYY-MM-DD"
           const normalized = data.map((d: any) => ({
             date: d.date,
             checkIn: d.checkIn ?? d.checkInTime ?? null,
@@ -113,10 +137,9 @@ export const useAttendanceCalendar = (
             totalHours: d.totalHours ?? 0,
             status: d.status ?? "PRESENT",
           }));
-
           setAttendanceData(normalized);
 
-          // Compute stats for the month (we interpret missing days as ABSENT except Sundays/Holidays)
+          // compute stats
           const daysArray = Array.from({ length: daysInMonth }, (_, i) =>
             dayjs(month).date(i + 1).format("YYYY-MM-DD")
           );
@@ -128,16 +151,16 @@ export const useAttendanceCalendar = (
             leaves = 0,
             totalHours = 0;
 
-          // make quick lookup map
           const map = new Map<string, AttendanceDay>();
           normalized.forEach((r) => map.set(r.date, r));
 
           daysArray.forEach((d) => {
-            const dayOfWeek = dayjs(d).day(); // 0 Sunday ... 6 Saturday
-            if (dayOfWeek === 0 || isRecurringHoliday(d)) {
-              // do not count Sundays/holidays as working day (but you can change policy)
-              return;
-            }
+            const dow = dayjs(d).day();
+            const isSunday = dow === 0;
+            const isHoliday = holidays.some((h) => h.date === d);
+
+            if (isSunday || isHoliday) return; // skip non-working days
+
             const rec = map.get(d);
             if (!rec) {
               absents++;
@@ -155,7 +178,6 @@ export const useAttendanceCalendar = (
                 case "LEAVE":
                   leaves++;
                   break;
-                case "ABSENT":
                 default:
                   absents++;
               }
@@ -163,15 +185,11 @@ export const useAttendanceCalendar = (
             }
           });
 
-          const workingDays = dayjs(month).daysInMonth() - // number of days
-            // subtract Sundays and recurring holidays count in the month
-            Array.from({ length: daysInMonth }, (_, i) =>
-              dayjs(month).date(i + 1)
-            ).filter(
-              (d) =>
-                d.day() === 0 ||
-                recurringHolidayMMDDs.includes(d.format("MM-DD"))
-            ).length; // number of non-working days to subtract
+          const workingDays = daysArray.filter((d) => {
+            const isSunday = dayjs(d).day() === 0;
+            const isHoliday = holidays.some((h) => h.date === d);
+            return !isSunday && !isHoliday;
+          }).length;
 
           setSummary({
             workingDays,
@@ -194,7 +212,7 @@ export const useAttendanceCalendar = (
 
     fetchAttendance();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [username, month, daysInMonth]);
+  }, [username, month, daysInMonth, holidays, refreshKey]);
 
-  return { attendanceData, summary, loading, month, setMonth, daysInMonth };
+  return { employeeFullName,attendanceData, summary, loading, month, setMonth, daysInMonth, holidays };
 };

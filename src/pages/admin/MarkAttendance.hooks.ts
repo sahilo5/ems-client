@@ -44,7 +44,7 @@ export const useMarkAttendance = () => {
       } else {
         showToast(response.message, "error");
       }
-    } catch (e){
+    } catch (e) {
       showToast(e.message, "error");
     }
   };
@@ -54,11 +54,11 @@ export const useMarkAttendance = () => {
   }, []);
 
   // Submit API
-  const handleAttendance = async () => {
+  const handleAttendance = async (): Promise<boolean> => {
     setLoading(true);
     let response;
     try {
-    
+
       if (mode === "mark") {
         // MARK API
         const body = {
@@ -74,6 +74,7 @@ export const useMarkAttendance = () => {
           },
           body: JSON.stringify(body),
         });
+
       } else {
         // UPDATE API
         const formatDateTime = (time: string) =>
@@ -103,18 +104,23 @@ export const useMarkAttendance = () => {
             : "Attendance updated successfully!",
           "success"
         );
-        setUsername("");
         setActionType("checkin");
         setCheckin("");
         setCheckout("");
+        if (response.success) {
+          return true;  // ✅ return success
+        } else {
+          return false;
+        }
       } else {
         showToast(response.message, "error");
       }
-    } catch(e) { 
+    } catch (e) {
       showToast(e.message, "error");
     } finally {
       setLoading(false);
     }
+    return false;
   };
 
   const validate = () => {
@@ -134,8 +140,9 @@ export const useMarkAttendance = () => {
 
   const onSubmitAttendance = () => {
     if (validate()) {
-      handleAttendance();
+      return handleAttendance();
     }
+    else return false
   };
 
   return {
