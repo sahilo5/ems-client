@@ -5,6 +5,7 @@ import Loader from "../../components/Loader";
 import { useAttendanceManagement } from "./AttendanceManagement.hooks";
 import ShowQrCode from "./ShowQrCode";
 import MarkAttendance from "./MarkAttendance";
+import AdminLeaveManagement from "./AdminLeaveManagement";
 
 const AttendanceManagement = () => {
   const {
@@ -27,7 +28,7 @@ const AttendanceManagement = () => {
         </Tab>
 
         {/* --- Mark Attendance Tab --- */}
-        <Tab index={1} label="Mark Attendance">
+        <Tab index={1} label="Manage Attendance">
           <div className="flex flex-col space-y-4">
             <MarkAttendance/>
             
@@ -39,8 +40,21 @@ const AttendanceManagement = () => {
           </div>
         </Tab>
 
+        {/* --- Manage Leave Tab --- */}
+        <Tab index={2} label="Manage Leave">
+          <div className="flex flex-col space-y-4">
+            <AdminLeaveManagement/>
+            
+            {loading && (
+              <div className="flex items-center justify-center bg-light">
+                <Loader size={48} color="text-primary" />
+              </div>
+            )}
+          </div>
+        </Tab>
+
         {/* --- Settings Tab --- */}
-        <Tab index={2} label="Settings">
+        <Tab index={3} label="Settings">
           <div className="flex flex-col space-y-4">
             <h2 className="text-lg font-semibold flex items-center space-x-2">
               <Settings className="size-5" /> <span>Attendance Settings</span>
