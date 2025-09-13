@@ -47,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleLogout = () => {
     navigate("/login");
-    localStorage.clear(); 
+    localStorage.clear();
   };
 
   // Auto-navigate to first nav item if on base route
@@ -76,9 +76,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div
-      className={`${
-        collapsed ? "w-16" : "w-56"
-      } h-full bg-primary text-white shadow-lg flex flex-col transition-all duration-300`}
+      className={`${collapsed ? "w-15" : "w-50"
+        } h-full bg-primary text-white shadow-lg flex flex-col transition-all duration-300`}
     >
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-light">
@@ -97,18 +96,17 @@ const Sidebar: React.FC<SidebarProps> = ({
       <nav className="flex-1 p-2 space-y-1">
         {effectiveNavItems.map((item) => (
           <NavLink
-          key={item.path}
-          to={item.path}
-          onClick={() => {
-            if (typeof item.onClick === "function") item.onClick();
-          }}
-          className={({ isActive }) =>
-            `flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium hover:bg-secondary transition ${
-              isActive ? "bg-secondary text-white" : "text-light"
-            }`
-          }
-        >
-        
+            key={item.path}
+            to={item.path}
+            onClick={() => {
+              if (typeof item.onClick === "function") item.onClick();
+            }}
+            className={({ isActive }) =>
+              `flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium hover:bg-secondary transition ${isActive ? "bg-secondary text-white" : "text-light"
+              }`
+            }
+          >
+
             {item.icon}
             {!collapsed && <span>{item.label}</span>}
           </NavLink>
@@ -130,14 +128,14 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
 
         <Popup
-        title="Confirm"
-        content="Are you sure you want to logout. This action cannot be undone."
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
-        variant="confirm"
-      />
+          title="Confirm"
+          content="Are you sure you want to logout. This action cannot be undone."
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+          variant="confirm"
+        />
       </div>
     </div>
   );

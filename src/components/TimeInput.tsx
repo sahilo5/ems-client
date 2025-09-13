@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Label from "./Label";
 
 type TimeInputProps = {
-  label: string;
+  label?: string;
   value: string; // "HH:mm"
   onChange: (val: string) => void;
   error?: string;

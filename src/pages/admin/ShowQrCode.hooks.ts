@@ -24,8 +24,8 @@ export const useShowQrCode = () => {
           "Content-Type": "application/json",
         },
       });
-      setQrToken(response.data); // backend sends ApiResponse<T>
-      setCountdown(REFRESH_INTERVAL / 1000); // reset countdown after refresh
+      setQrToken(response.data.qrToken); 
+      setCountdown(response.data.expiryDuration); 
     } catch (err: any) {
       showToast(err.message,"error")
     } finally {

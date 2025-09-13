@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar, { NavItem } from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import Loader from "../../components/Loader";
-import { CalendarCheck2Icon, CalendarCheckIcon, CheckSquare2, DoorOpen, HomeIcon, LogOut, LogOutIcon, PinOff, UserIcon, Users2 } from "lucide-react";
+import { CalendarCheck2Icon, CalendarCheckIcon, CheckSquare2, DoorOpen, HomeIcon, LogOut, LogOutIcon, PinOff, Settings, UserIcon, Users2 } from "lucide-react";
 import { COMPANY_NAME } from "../../constants";
 import { api } from "../../utils/api";
 import { AuthContext } from "../../context/AuthContext";
@@ -46,7 +46,9 @@ const DashboardLayout: React.FC = () => {
             { label: "Dashboard", path: "/admin/dashboard", icon: <HomeIcon /> },
             { label: "Employees", path: "/admin/employee-management", icon: <Users2 /> },
             { label: "Attendance", path: "/admin/attendance-management", icon: <CalendarCheckIcon /> },
-            { label: "Profile", path: "/admin/profile", icon: <UserIcon /> }
+            { label: "Leave", path: "/admin/leave-management", icon: <DoorOpen /> },
+            { label: "Settings", path: "/admin/settings", icon: <Settings /> },
+            { label: "Profile", path: "/admin/profile", icon: <UserIcon /> },
           );
           setProfilePath("/admin/profile");
         } else if (role === "USER") {
@@ -58,7 +60,7 @@ const DashboardLayout: React.FC = () => {
         } else if (role === "EMPLOYEE") {
           items.push(
             { label: "Dashboard", path: "/employee/dashboard", icon: <HomeIcon /> },
-            { label: "Leave Management", path: "/employee/leave-management", icon: <DoorOpen /> },
+            { label: "Leave", path: "/employee/leave-management", icon: <DoorOpen /> },
             { label: "Profile", path: "/employee/profile", icon: <UserIcon /> }
           );
           setProfilePath("/employee/profile");

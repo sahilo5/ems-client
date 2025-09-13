@@ -43,7 +43,7 @@ const UserManagement = () => {
         {/* --- Roles Tab --- */}
         <Tab index={0} label="Roles" onClick={handleUsersWithRoles}>
           <Browse
-            title="Users"
+            title="Roles"
             data={UsersWithRoleData}
             columns={UserWithRoleColumnHeaders}
             selectable={true}

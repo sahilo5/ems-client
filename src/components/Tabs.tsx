@@ -43,7 +43,7 @@ export const Tabs: React.FC<TabsProps> = ({ defaultIndex = 0, children }) => {
     <TabsContext.Provider value={{ activeIndex, setActiveIndex }}>
       <div className="w-full">
         {/* Tab Buttons */}
-        <div className="flex space-x-2 border-b border-gray-200 mb-1">
+        <div className="flex space-x-2 border-b border-gray-200 mb-1 sticky top-0 bg-white z-10">
           {validChildren.map((child) => {
             const { index, label, onClick } = child.props;
 
