@@ -28,7 +28,7 @@ const DashboardLayout: React.FC = () => {
 
       try {
         // Fetch full name
-        const response = await api(`/user/fullName/${username}`, {
+        const fullNameresponse = await api(`/user/fullName/${username}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -36,7 +36,7 @@ const DashboardLayout: React.FC = () => {
           },
         });
 
-        setUserFullName(`${response.firstName} ${response.lastName}`);
+        setUserFullName(`${fullNameresponse.firstName} ${fullNameresponse.lastName}`);
 
         // Set nav and profile path
         const items: NavItem[] = [];

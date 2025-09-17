@@ -29,6 +29,8 @@ export const useSystemSettings = () => {
   const [dirty, setDirty] = useState(false); // track unsaved changes
   const [pendingChanges, setPendingChanges] = useState<PendingChange[]>([]);
 
+  const [holidayData, setHolidayData] = useState<{ date: string; name: string }[]>([]);
+
   // --- Normalize backend response ---
   const normalize = (s: any): Setting => {
     let parsed: any;
@@ -65,6 +67,28 @@ export const useSystemSettings = () => {
     }
   };
 
+  const fetchHolidayData = async () => {
+    try {
+      const response = await api(`/admin/settings/getAllSettings`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      if (response.success) {
+        const all = response.data.map((s: any) => normalize(s));
+        const holidaySetting = all.find((s: Setting) => s.key === "calendar_holidays_2025");
+  
+        if (holidaySetting) {
+          setHolidayData(holidaySetting.data.list || []);
+        }
+      } else {
+        showToast(response.message, "error");
+      }
+    } catch (err: any) {
+      showToast(err.message, "error");
+    }
+  };
+  
   // ✅ Validation per type
   const validateValue = (s: Setting, value: any): string | null => {
     if (s.dataType === "INT" && isNaN(Number(value))) {
@@ -136,7 +160,7 @@ export const useSystemSettings = () => {
           body: JSON.stringify({
             data: JSON.stringify(change.payload)
           }),
-          
+
         });
 
         if (!response.success) {
@@ -152,8 +176,61 @@ export const useSystemSettings = () => {
     }
   };
 
+
+  const handleAddHoliday = (newHoliday: { date: string; name: string }) => {
+    const holidaySetting = settings.find((s) => s.key === "calendar_holidays_2025");
+    if (!holidaySetting) return;
+
+    const updated = [...(holidaySetting.data.list || []), newHoliday];
+    updateLocalSetting(holidaySetting.id, updated);
+  };
+
+  const handleUpdateHoliday = (index: number, updatedHoliday: { date: string; name: string }) => {
+    const holidaySetting = settings.find((s) => s.key === "calendar_holidays_2025");
+    if (!holidaySetting) return;
+
+    const updated = [...(holidaySetting.data.list || [])];
+    updated[index] = updatedHoliday;
+    updateLocalSetting(holidaySetting.id, updated);
+  };
+
+  const handleDeleteHoliday = (index: number) => {
+    const holidaySetting = settings.find((s) => s.key === "calendar_holidays_2025");
+    if (!holidaySetting) return;
+
+    const updated = (holidaySetting.data.list || []).filter((_, i) => i !== index);
+    updateLocalSetting(holidaySetting.id, updated);
+  };
+
+      {/* Holidays Modal */}
+      const [isHolidayFormOpen, setIsHolidayFormOpen] = useState(false);
+const [editingHoliday, setEditingHoliday] = useState<null | { index: number; date: string; name: string }>(null);
+const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+const [selectedToDelete, setSelectedToDelete] = useState<{ date: string; name: string }[]>([]);
+
+{/* Add/Edit Holiday Form */}
+// states
+const [holidayDate, setHolidayDate] = useState(new Date().toISOString().slice(0, 10));
+const [holidayName, setHolidayName] = useState("");
+const [errors, setErrors] = useState<{ date?: string; name?: string }>({});
+
+// sync when editingHoliday changes
+useEffect(() => {
+  if (editingHoliday) {
+    setHolidayDate(editingHoliday.date);
+    setHolidayName(editingHoliday.name);
+  } else {
+    // reset for add mode
+    setHolidayDate(new Date().toISOString().slice(0, 10));
+    setHolidayName("");
+  }
+}, [editingHoliday, isHolidayFormOpen]);
+
+
+
   useEffect(() => {
     fetchSettings();
+    fetchHolidayData();
   }, []);
 
   return {
@@ -165,5 +242,16 @@ export const useSystemSettings = () => {
     saveAll,
     dirty,
     pendingChanges,
+    handleDeleteHoliday,
+    handleUpdateHoliday,
+    handleAddHoliday,
+    isHolidayFormOpen, setIsHolidayFormOpen,
+    editingHoliday, setEditingHoliday,
+    deleteConfirmOpen, setDeleteConfirmOpen,
+    selectedToDelete, setSelectedToDelete,
+    holidayDate, setHolidayDate,
+    holidayName, setHolidayName,
+    errors, setErrors,
+    holidayData, fetchHolidayData,
   };
 };
