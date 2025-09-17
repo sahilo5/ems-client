@@ -3,8 +3,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar, { NavItem } from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import Loader from "../../components/Loader";
-import { CalendarCheck2Icon, CalendarCheckIcon, CheckSquare2, DoorOpen, HomeIcon, LogOut, LogOutIcon, PinOff, Settings, UserIcon, Users2 } from "lucide-react";
-import { COMPANY_NAME } from "../../constants";
+import { CalendarCheck2Icon, CalendarCheckIcon,  DoorOpen, HomeIcon, LogOut, Settings, UserIcon, Users2 } from "lucide-react";
 import { api } from "../../utils/api";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -17,6 +16,7 @@ const DashboardLayout: React.FC = () => {
   const [navItems, setNavItems] = useState<NavItem[]>([]);
   const [profilePath, setProfilePath] = useState("");
   const { role, token, username } = useContext(AuthContext);
+  const [companyName,setCompanyName] = useState("");
 
   useEffect(() => {
     const init = async () => {
@@ -28,7 +28,7 @@ const DashboardLayout: React.FC = () => {
 
       try {
         // Fetch full name
-        const fullNameresponse = await api(`/user/fullName/${username}`, {
+        const fullNameResponse = await api(`/user/fullName/${username}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -36,7 +36,22 @@ const DashboardLayout: React.FC = () => {
           },
         });
 
-        setUserFullName(`${fullNameresponse.firstName} ${fullNameresponse.lastName}`);
+        setUserFullName(`${fullNameResponse.firstName} ${fullNameResponse.lastName}`);
+
+        const companyNameResponse = await api(`/user/settings/12`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        const companyNameData = JSON.parse(companyNameResponse.data.data);
+        if(!companyNameData.value || companyNameData.value == undefined){
+          companyNameData.value = "Set Your Company's Name";
+        }else{
+          setCompanyName(companyNameData.value)
+        }   
 
         // Set nav and profile path
         const items: NavItem[] = [];
@@ -97,7 +112,7 @@ const DashboardLayout: React.FC = () => {
       <div className="flex flex-col flex-1 bg-light overflow-hidden">
         <div className="h-14">
           <Navbar
-            companyName={COMPANY_NAME}
+            companyName={companyName}
             userName={userFullName}
             onUserClick={() => navigate(profilePath)}
           />
