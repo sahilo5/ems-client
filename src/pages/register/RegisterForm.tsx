@@ -3,7 +3,6 @@ import Form from "../../components/Form";
 import { useRegisterForm } from "./RegisterForm.hooks";
 import Button from "../../components/Button";
 import Input from "../../components/Input"; // import for direct use
-import { COMPANY_NAME } from "../../constants";
 
 const RegisterForm = () => {
   const {
@@ -126,7 +125,7 @@ const RegisterForm = () => {
         </Button>
       </div>
       <div className="mt-6 text-center text-sm text-muted">
-  &copy; {new Date().getFullYear()} <span className="font-semibold text-primary">{COMPANY_NAME}</span>. All rights reserved.
+  {/* &copy; {new Date().getFullYear()} <span className="font-semibold text-primary">{COMPANY_NAME}</span>. All rights reserved. */}
 </div>
     </div>
   );

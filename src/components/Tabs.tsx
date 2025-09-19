@@ -52,7 +52,7 @@ export const Tabs: React.FC<TabsProps> = ({ defaultIndex = 0, children }) => {
                 key={index}
                 onClick={() => {
                   setActiveIndex(index);
-                  if (typeof onClick === "function") onClick(); // 👈 Call onClick if provided
+                  if (typeof onClick === "function") onClick(); 
                 }}
                 className={`px-4 py-2 text-sm font-medium rounded-t-md transition-all duration-200 ${activeIndex === index
                     ? "bg-gray-200 text-accent border-b-2 border-accent"
@@ -75,7 +75,6 @@ export const Tabs: React.FC<TabsProps> = ({ defaultIndex = 0, children }) => {
       </div>
     </TabsContext.Provider>
   );
-
 };
 
 // Tab Component

@@ -26,17 +26,15 @@ export const useUserManagement = () => {
         },
       });
 
-      if (response.success) {
-        const transformedData = response.data.map((user: any) => ({
-          name: `${user.firstName} ${user.lastName}`,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          username: user.username,
-        }));
-        setUserData(transformedData);
-      } else {
-        showToast(response.message, "error");
-      }
+
+      const transformedData = response.data.map((user: any) => ({
+        name: `${user.firstName} ${user.lastName}`,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        username: user.username,
+      }));
+      setUserData(transformedData);
+
     } catch (error) {
       showToast(error, "error");
     } finally {
@@ -54,7 +52,7 @@ export const useUserManagement = () => {
           "Content-Type": "application/json",
         },
       });
-  
+
       if (response.success) {
         const transformedData = response.data.map((user: any) => ({
           name: `${user.firstName} ${user.lastName}`,
@@ -71,7 +69,7 @@ export const useUserManagement = () => {
       setLoading(false);
     }
   };
-  
+
 
   const handleUpdateUser = async (userData: any) => {
     setLoading(true);
@@ -84,7 +82,7 @@ export const useUserManagement = () => {
           "Content-Type": "application/json",
         },
       });
-  
+
       if (response.success) {
         showToast("User updated successfully", "success");
         handleGetAllUsers();
@@ -98,7 +96,7 @@ export const useUserManagement = () => {
       setLoading(false);
     }
   };
-  
+
 
   const handleBulkDeleteUsers = async (selectedUsers: any[]) => {
     if (!selectedUsers.length) {

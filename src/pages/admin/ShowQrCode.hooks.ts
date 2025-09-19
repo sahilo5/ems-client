@@ -2,10 +2,9 @@
 import { useEffect, useState, useCallback, useContext } from "react";
 import { api } from "../../utils/api";
 import { AuthContext } from "../../context/AuthContext";
-import { INTERVAL_FOR_QR } from "../../constants";
 import { useToast } from "../../components/ToastProvider";
 
-const REFRESH_INTERVAL = INTERVAL_FOR_QR; 
+const REFRESH_INTERVAL = 30000; 
 
 export const useShowQrCode = () => {
   const [qrToken, setQrToken] = useState<string | null>(null);

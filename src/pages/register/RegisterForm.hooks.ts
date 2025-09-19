@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../utils/api";
+import { useToast } from "../../components/ToastProvider";
 
 export const useRegisterForm = () => {
   const [firstName, setFirstName] = useState("");
@@ -12,6 +13,7 @@ export const useRegisterForm = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agree, setAgree] = useState(false);
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const handleRegister = async () => {
     try {
@@ -19,18 +21,18 @@ export const useRegisterForm = () => {
         method: "POST",
         body: JSON.stringify({ firstName, lastName, email, phoneNumber, username, password, confirmPassword, agree }),
       });
-
-      if (response.status === 201) {
-        navigate("/login");
-      }
+      showToast(response.message, "success");
+      navigate("/login");
+      
     } catch (err: any) {
       const serverErrors: { [key: string]: string } = {};
-      if(err.message === "Username already exists"){
+      if (err.message === "Username already exists") {
         serverErrors.usernameError = "Username already exists !";
-      }else{
-        serverErrors.usernameError ="Server error. Please try again later !";
-      } 
+      } else {
+        showToast(err.message,"error");
+      }
       setErrors(prev => ({ ...prev, ...serverErrors }));
+   
     }
   };
 

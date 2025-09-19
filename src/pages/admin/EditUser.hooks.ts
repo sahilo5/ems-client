@@ -73,12 +73,13 @@ export const useEditUser = (onClose: () => void) => {
       resetForm();
     } catch (err: any) {
       const serverErrors: { [key: string]: string } = {};
-      if (err.message?.includes("Username already exists")) {
-        serverErrors.usernameError = "Username already exists!";
+      if (err.message === "Username already exists") {
+        serverErrors.usernameError = "Username already exists !";
       } else {
-        serverErrors.usernameError = "Server error. Please try again later!";
+        showToast(err.message,"error");
       }
-      setErrors((prev) => ({ ...prev, ...serverErrors }));
+      setErrors(prev => ({ ...prev, ...serverErrors }));
+  
     }
   };
 

@@ -25,6 +25,7 @@ export const useAddNewUser = (onClose: () => void) => {
         body: JSON.stringify({ firstName, lastName, email, phoneNumber, username, password, confirmPassword }),
       });
 
+      handleGetAllUsers();
       showToast(response.message, "success");
       onClose();
     } catch (err: any) {
@@ -32,11 +33,10 @@ export const useAddNewUser = (onClose: () => void) => {
       if (err.message === "Username already exists") {
         serverErrors.usernameError = "Username already exists !";
       } else {
-        serverErrors.usernameError = "Server error. Please try again later !";
+        showToast(err.message,"error");
       }
       setErrors(prev => ({ ...prev, ...serverErrors }));
     }
-    handleGetAllUsers();
     setOpen(false);
   };
 

@@ -65,7 +65,7 @@ export const useAttendanceCalendar = (
   /** fetch holidays from settings */
   const fetchHolidays = async () => {
     try {
-      const res = await api("/admin/settings/1", {
+      const res = await api("/user/settings/1", {
         method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
