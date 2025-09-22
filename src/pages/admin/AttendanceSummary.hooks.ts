@@ -1,13 +1,14 @@
-import { useState, useEffect, useContext } from "react";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { api } from "../../utils/api";
 import { AuthContext } from "../../context/AuthContext";
+import { useContext } from "react";
 import { useToast } from "../../components/ToastProvider";
 
 export type AttendanceDay = {
   date: string; // "YYYY-MM-DD"
-  checkIn?: string;
-  checkOut?: string;
+  checkIn?: string | null;
+  checkOut?: string | null;
   totalHours?: number;
   status: "PRESENT" | "ABSENT" | "HALF_DAY" | "LATE" | "LEAVE";
 };
@@ -33,6 +34,7 @@ type UseAttendanceCalendarResult = {
   setMonth: (m: string) => void;
   daysInMonth: number;
   holidays: Holiday[];
+  joinDate: string | null; // NEW: employee joining date (YYYY-MM-DD) if available
 };
 
 export const useAttendanceCalendar = (
@@ -49,6 +51,7 @@ export const useAttendanceCalendar = (
   const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [loading, setLoading] = useState(false);
   const [employeeFullName, setEmployeeFullName] = useState("");
+  const [joinDate, setJoinDate] = useState<string | null>(null);
 
   const [summary, setSummary] = useState<Summary>({
     workingDays: 0,
@@ -61,20 +64,25 @@ export const useAttendanceCalendar = (
   });
 
   const daysInMonth = dayjs(month).daysInMonth();
+  const todayStr = dayjs().format("YYYY-MM-DD");
 
-  /** fetch holidays from settings */
+  /** fetch holidays from settings (existing behaviour, kept) */
   const fetchHolidays = async () => {
     try {
       const res = await api("/user/settings/1", {
         method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
       if (res?.success && res.data?.data) {
-        const parsed: Holiday[] = JSON.parse(res.data.data);
-        setHolidays(parsed);
+        try {
+          const parsed: Holiday[] = JSON.parse(res.data.data);
+          setHolidays(parsed);
+        } catch {
+          setHolidays([]);
+        }
       }
     } catch (err: any) {
       showToast(err?.message || "Failed to fetch holidays", "error");
@@ -99,26 +107,116 @@ export const useAttendanceCalendar = (
           leaves: 0,
           totalHours: 0,
         });
+        setJoinDate(null);
+        setEmployeeFullName("");
         return;
       }
 
       setLoading(true);
 
-      // Fetch full name
-      const fullNameRespone = await api(`/user/fullName/${username}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      // --- Fetch employee full name and join date in parallel ---
+      let fullNameResp: any = null;
+      let joinResp: any = null;
 
-      setEmployeeFullName(`${fullNameRespone.firstName} ${fullNameRespone.lastName}`);
-  
       try {
-        const start = dayjs(month).startOf("month").format("YYYY-MM-DD");
-        const end = dayjs(month).endOf("month").format("YYYY-MM-DD");
+        fullNameResp = await api(`/user/fullName/${username}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+      } catch (err) {
+        // ignore, will fallback to username
+      }
 
+      try {
+        joinResp = await api(`/admin/employee-since/${username}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+      } catch (err) {
+        // ignore, join date might be missing
+      }
+
+      // robust parsing of full name response
+      try {
+        let nameStr = "";
+        if (fullNameResp) {
+          if (fullNameResp?.data && typeof fullNameResp.data === "object") {
+            const d = fullNameResp.data;
+            nameStr =
+              (d.firstName ? `${d.firstName}` : "") +
+              (d.lastName ? ` ${d.lastName}` : "");
+            nameStr = nameStr.trim() || d.fullName || "";
+          } else if (typeof fullNameResp?.data === "string") {
+            nameStr = fullNameResp.data;
+          } else if (fullNameResp?.firstName || fullNameResp?.lastName) {
+            nameStr =
+              `${fullNameResp.firstName || ""} ${fullNameResp.lastName || ""}`.trim();
+          }
+        }
+        setEmployeeFullName(nameStr || username);
+      } catch {
+        setEmployeeFullName(username);
+      }
+
+      // robust parsing of join date
+      let parsedJoin: dayjs.Dayjs | null = null;
+      try {
+        if (joinResp && joinResp.success) {
+          // common shapes: joinResp.data (string or object)
+          const candidate =
+            joinResp.data?.data ?? joinResp.data ?? joinResp?.data?.joinDate ?? null;
+          const joinStr =
+            typeof candidate === "string" ? candidate : candidate?.date ?? candidate?.joinedOn ?? null;
+          if (joinStr) {
+            parsedJoin = dayjs(joinStr);
+            if (!parsedJoin.isValid()) parsedJoin = null;
+          }
+        }
+      } catch {
+        parsedJoin = null;
+      }
+      const joinStrNormalized = parsedJoin ? parsedJoin.format("YYYY-MM-DD") : null;
+      setJoinDate(joinStrNormalized);
+
+      try {
+        // determine month boundaries
+        const startOfMonth = dayjs(month).startOf("month"); // e.g. 2025-09-01
+        const endOfMonth = dayjs(month).endOf("month"); // e.g. 2025-09-30
+
+        // compute effective fetching range: from max(joinDate, startOfMonth) to min(endOfMonth, today)
+        const effectiveStart = parsedJoin && parsedJoin.isAfter(startOfMonth)
+          ? parsedJoin
+          : startOfMonth;
+
+        const effectiveEnd = dayjs().isBefore(endOfMonth) ? dayjs() : endOfMonth;
+
+        // If employee joined after the effective end, nothing to fetch / count
+        if (parsedJoin && parsedJoin.isAfter(effectiveEnd, "day")) {
+          setAttendanceData([]);
+          setSummary({
+            workingDays: 0,
+            presents: 0,
+            absents: 0,
+            halfDays: 0,
+            lates: 0,
+            leaves: 0,
+            totalHours: 0,
+          });
+          setLoading(false);
+          return;
+        }
+
+        // format for API
+        const start = effectiveStart.format("YYYY-MM-DD");
+        const end = effectiveEnd.format("YYYY-MM-DD");
+
+        // fetch attendance only for the effective range
         const response = await api("/admin/attendance/summary", {
           method: "POST",
           headers: {
@@ -129,8 +227,8 @@ export const useAttendanceCalendar = (
         });
 
         if (response && response.success) {
-          const data: AttendanceDay[] = response.data || [];
-          const normalized = data.map((d: any) => ({
+          const data: any[] = response.data || [];
+          const normalized: AttendanceDay[] = data.map((d: any) => ({
             date: d.date,
             checkIn: d.checkIn ?? d.checkInTime ?? null,
             checkOut: d.checkOut ?? d.checkOutTime ?? null,
@@ -139,9 +237,12 @@ export const useAttendanceCalendar = (
           }));
           setAttendanceData(normalized);
 
-          // compute stats
-          const daysArray = Array.from({ length: daysInMonth }, (_, i) =>
-            dayjs(month).date(i + 1).format("YYYY-MM-DD")
+          // compute stats only within [effectiveStart, effectiveEnd]
+          const iterStart = effectiveStart.startOf("day");
+          const iterEnd = effectiveEnd.startOf("day");
+          const daysCount = iterEnd.diff(iterStart, "day") + 1;
+          const daysArray = Array.from({ length: Math.max(0, daysCount) }, (_, i) =>
+            iterStart.add(i, "day").format("YYYY-MM-DD")
           );
 
           let presents = 0,
@@ -212,7 +313,17 @@ export const useAttendanceCalendar = (
 
     fetchAttendance();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [username, month, daysInMonth, holidays, refreshKey]);
+  }, [username, month, daysInMonth, holidays, refreshKey, token]);
 
-  return { employeeFullName,attendanceData, summary, loading, month, setMonth, daysInMonth, holidays };
+  return {
+    employeeFullName,
+    attendanceData,
+    summary,
+    loading,
+    month,
+    setMonth,
+    daysInMonth,
+    holidays,
+    joinDate,
+  };
 };

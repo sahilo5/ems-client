@@ -1,13 +1,13 @@
-// src/pages/attendance/AttendanceCalendar.tsx
-import React, { useEffect } from "react";
+
+import React from "react";
 import dayjs from "dayjs";
 import { useAttendanceCalendar, AttendanceDay } from "./AttendanceSummary.hooks";
 import Loader from "../../components/Loader";
 
 type Props = {
   username: string;
-  initialMonth?: string; // "YYYY-MM"
-  refreshKey?:number;
+  initialMonth?: string;
+  refreshKey?: number;
 };
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -19,25 +19,32 @@ const statusColors: Record<string, string> = {
   LATE: "bg-yellow-300",
   LEAVE: "bg-orange-600",
   HOLIDAY: "bg-gray-100",
-  UNMARKED: "bg-gray-300",
+  UNMARKED: "bg-gray-300", // used for pre-join or future dates
 };
 
-const AttendanceCalendar: React.FC<Props> = ({ username, initialMonth, refreshKey  }) => {
-  const { employeeFullName,attendanceData, summary, loading, month, setMonth, daysInMonth,holidays } =
-    useAttendanceCalendar(username, initialMonth,refreshKey);
+const AttendanceCalendar: React.FC<Props> = ({ username, initialMonth, refreshKey }) => {
+  const {
+    employeeFullName,
+    attendanceData,
+    summary,
+    loading,
+    month,
+    setMonth,
+    daysInMonth,
+    holidays,
+    joinDate,
+  } = useAttendanceCalendar(username, initialMonth, refreshKey);
 
-  // map for O(1) lookup
   const recordMap = new Map<string, AttendanceDay>();
   attendanceData.forEach((r) => recordMap.set(r.date, r));
 
   const startOfMonth = dayjs(month).startOf("month");
-  const firstDayIndex = startOfMonth.day(); // 0..6
+  const firstDayIndex = startOfMonth.day();
   const monthName = dayjs(month).format("MMMM YYYY");
 
-  const handleMonthChange = (val: string) => {
-    // val is "YYYY-MM"
-    setMonth(val);
-  };
+  const today = dayjs();
+
+  const handleMonthChange = (val: string) => setMonth(val);
 
   return (
     <div className="flex flex-col md:flex-row gap-6 mt-10 bg-white border rounded-lg border-white">
@@ -66,53 +73,71 @@ const AttendanceCalendar: React.FC<Props> = ({ username, initialMonth, refreshKe
         <div className="mt-2 overflow-x-auto">
           <div
             className="grid grid-cols-7 gap-2"
-            style={{ minWidth: 7 * 84 }} // ensure comfortable width on small screens (cells 84px)
+            style={{ minWidth: 7 * 84 }}
           >
-            {/* empty placeholders for starting offset */}
+            {/* Empty placeholders for offset */}
             {Array.from({ length: firstDayIndex }).map((_, i) => (
               <div key={`empty-${i}`} className="h-20 rounded-lg border bg-white" />
             ))}
 
-            {/* day cells */}
+            {/* Day cells */}
             {Array.from({ length: daysInMonth }, (_, i) => {
               const dateIso = dayjs(month).date(i + 1).format("YYYY-MM-DD");
               const record = recordMap.get(dateIso);
 
-              // determine status
               const isSunday = dayjs(dateIso).day() === 0;
               const holiday = holidays.find((h) => h.date === dateIso);
 
-              const status = record
-                ? record.status
-                : isSunday || holiday
-                  ? "HOLIDAY"
-                  : "ABSENT";
+              const beforeJoin =
+                joinDate && dayjs(dateIso).isBefore(dayjs(joinDate), "day");
+              const afterToday = dayjs(dateIso).isAfter(today, "day");
+
+              let status: string;
+              if (beforeJoin || afterToday) {
+                status = "UNMARKED"; // pre-join or future → gray
+              } else if (record) {
+                status = record.status;
+              } else if (isSunday || holiday) {
+                status = "HOLIDAY";
+              } else {
+                status = "ABSENT";
+              }
 
               const colorClass = statusColors[status] ?? "bg-white";
 
               const tooltip = record
-                ? `Check-In: ${record.checkIn ?? "-"} | Check-Out: ${record.checkOut ?? "-"
-                } | Hours: ${record.totalHours ?? 0}`
+                ? `Check-In: ${record.checkIn ?? "-"} | Check-Out: ${record.checkOut ?? "-"} | Hours: ${record.totalHours ?? 0}`
                 : isSunday
-                  ? "Sunday / Holiday"
-                  : holiday
-                    ? holiday.name
-                    : "No record";
-
+                ? "Sunday / Holiday"
+                : holiday
+                ? holiday.name
+                : beforeJoin
+                ? "Not joined yet"
+                : afterToday
+                ? "Future date"
+                : "Absent";
 
               return (
                 <div
                   key={dateIso}
                   title={tooltip}
-                  className={`h-20 min-h-[72px] rounded-lg cursor-pointer flex flex-col justify-between p-2 text-xl border ${colorClass
-                    } hover:brightness-95 transition-shadow`}
+                  className={`h-20 min-h-[72px] rounded-lg cursor-pointer flex flex-col justify-between p-2 text-xl border ${colorClass} hover:brightness-95 transition-shadow`}
                 >
                   <div className="flex justify-between items-start">
                     <span className="text-md font-semibold">{i + 1}</span>
                   </div>
                   <div className="text-[12px] w-full text-left">
-                    <div>{record ? record.status : isSunday ? "Sunday" : holiday
-                    ? holiday.name: "Absent"}</div>
+                    {record
+                      ? record.status
+                      : isSunday
+                      ? "Sunday"
+                      : holiday
+                      ? holiday.name
+                      : beforeJoin
+                      ? "Not Joined"
+                      : afterToday
+                      ? "Upcoming"
+                      : "Absent"}
                   </div>
                 </div>
               );
@@ -125,10 +150,10 @@ const AttendanceCalendar: React.FC<Props> = ({ username, initialMonth, refreshKe
       <div className="w-full md:w-1/3 border-2 rounded-lg p-4 bg-white shadow-sm border-accent">
         <h4 className="text-lg font-semibold mb-2">{employeeFullName}</h4>
         {loading ? (
-              <div className="flex items-center justify-center bg-light">
-                <Loader size={48} color="text-primary" />
-              </div>
-            ) : (
+          <div className="flex items-center justify-center bg-light">
+            <Loader size={48} color="text-primary" />
+          </div>
+        ) : (
           <>
             <div className="text-sm mb-3">
               <div>
@@ -148,7 +173,6 @@ const AttendanceCalendar: React.FC<Props> = ({ username, initialMonth, refreshKe
                 <div className="font-semibold">Absent</div>
                 <div>{summary.absents}</div>
               </div>
-
               <div className="p-2 rounded bg-yellow-50">
                 <div className="font-semibold">Late</div>
                 <div>{summary.lates}</div>
@@ -157,7 +181,6 @@ const AttendanceCalendar: React.FC<Props> = ({ username, initialMonth, refreshKe
                 <div className="font-semibold">Half Days</div>
                 <div>{summary.halfDays}</div>
               </div>
-
               <div className="p-2 rounded bg-orange-100 col-span-2">
                 <div className="font-semibold">Leaves</div>
                 <div>{summary.leaves}</div>
