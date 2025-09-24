@@ -108,7 +108,7 @@ export const useMarkAttendance = () => {
         setCheckin("");
         setCheckout("");
         if (response.success) {
-          return true;  // ✅ return success
+          return true;  
         } else {
           return false;
         }

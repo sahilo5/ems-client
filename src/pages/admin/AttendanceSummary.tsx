@@ -1,8 +1,13 @@
-
-import React from "react";
+// src/pages/attendance/AttendanceCalendar.tsx
+import React, { useContext } from "react";
 import dayjs from "dayjs";
 import { useAttendanceCalendar, AttendanceDay } from "./AttendanceSummary.hooks";
 import Loader from "../../components/Loader";
+import ThreeDotDropdown from "../../components/ThreeDotDropdown"; // adjust path if needed
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
+import { CompanyContext } from "../../context/CompanyContext";
 
 type Props = {
   username: string;
@@ -19,7 +24,7 @@ const statusColors: Record<string, string> = {
   LATE: "bg-yellow-300",
   LEAVE: "bg-orange-600",
   HOLIDAY: "bg-gray-100",
-  UNMARKED: "bg-gray-300", // used for pre-join or future dates
+  UNMARKED: "bg-gray-300", // pre-join or future
 };
 
 const AttendanceCalendar: React.FC<Props> = ({ username, initialMonth, refreshKey }) => {
@@ -35,16 +40,144 @@ const AttendanceCalendar: React.FC<Props> = ({ username, initialMonth, refreshKe
     joinDate,
   } = useAttendanceCalendar(username, initialMonth, refreshKey);
 
+  const { companyName } = useContext(CompanyContext);
+
   const recordMap = new Map<string, AttendanceDay>();
   attendanceData.forEach((r) => recordMap.set(r.date, r));
 
   const startOfMonth = dayjs(month).startOf("month");
   const firstDayIndex = startOfMonth.day();
   const monthName = dayjs(month).format("MMMM YYYY");
-
   const today = dayjs();
 
   const handleMonthChange = (val: string) => setMonth(val);
+
+  // Build normalized calendar rows just like the UI
+const buildMonthlyRows = () => {
+  const rows: any[] = [];
+  const startOfMonth = dayjs(month).startOf("month");
+  const endOfMonth = dayjs(month).endOf("month");
+
+  for (let d = startOfMonth; d.isBefore(endOfMonth) || d.isSame(endOfMonth, "day"); d = d.add(1, "day")) {
+    const dateIso = d.format("YYYY-MM-DD");
+    const record = recordMap.get(dateIso);
+
+    const isSunday = d.day() === 0;
+    const holiday = holidays.find((h) => h.date === dateIso);
+    const beforeJoin = joinDate && d.isBefore(dayjs(joinDate), "day");
+    const afterToday = d.isAfter(today, "day");
+
+    let status: string;
+    if (beforeJoin) status = "Not Joined";
+    else if (afterToday) status = "Upcoming";
+    else if (record) status = record.status;
+    else if (isSunday || holiday) status = holiday ? `Holiday: ${holiday.name}` : "Holiday";
+    else status = "Absent";
+
+    rows.push({
+      Date: dateIso,
+      "Check-In": record?.checkIn || "-",
+      "Check-Out": record?.checkOut || "-",
+      Hours: record?.totalHours || 0,
+      Status: status,
+    });
+  }
+  return rows;
+};
+
+const buildYearlyRows = () => {
+  const year = dayjs(month).year();
+  const rows: any[] = [];
+
+  // Monthly summary per month
+  for (let m = 0; m < 12; m++) {
+    const monthStr = dayjs().year(year).month(m).format("YYYY-MM");
+    // Filter data for this month only
+    const monthRecords = attendanceData.filter((r) => r.date.startsWith(monthStr));
+
+    const presents = monthRecords.filter((r) => r.status === "PRESENT").length;
+    const absents = monthRecords.filter((r) => r.status === "ABSENT").length;
+    const halfDays = monthRecords.filter((r) => r.status === "HALF_DAY").length;
+    const lates = monthRecords.filter((r) => r.status === "LATE").length;
+    const leaves = monthRecords.filter((r) => r.status === "LEAVE").length;
+    const totalHours = monthRecords.reduce((acc, r) => acc + (r.totalHours || 0), 0);
+
+    rows.push({
+      Month: dayjs(monthStr).format("MMMM YYYY"),
+      Present: presents,
+      Absent: absents,
+      "Half Days": halfDays,
+      Late: lates,
+      Leaves: leaves,
+      Hours: totalHours,
+    });
+  }
+
+  return rows;
+};
+
+  // --------- EXPORT HELPERS ----------
+  const exportPDF = (scope: "month" | "year") => {
+    const doc = new jsPDF();
+    const reportTitle =
+      scope === "month"
+        ? `Attendance Report - ${monthName}`
+        : `Attendance Report - Year ${dayjs(month).year()}`;
+  
+    doc.setFontSize(16);
+    doc.text(companyName || "Your Company Name", 75, 15);
+    doc.setFontSize(12);
+    doc.text(reportTitle, 14, 25);
+    doc.text(`Employee: ${employeeFullName}`, 14, 35);
+    doc.text(`Generated: ${today.format("DD MMM YYYY")}`, 150, 35);
+  
+    if (scope === "month") {
+      const rows = buildMonthlyRows();
+      autoTable(doc, {
+        head: [["Date", "Check-In", "Check-Out", "Hours", "Status"]],
+        body: rows.map((r) => [r.Date, r["Check-In"], r["Check-Out"], r.Hours, r.Status]),
+        startY: 45,
+      });
+    } else {
+      const rows = buildYearlyRows();
+      autoTable(doc, {
+        head: [["Month", "Present", "Absent", "Half Days", "Late", "Leaves", "Hours"]],
+        body: rows.map((r) => [
+          r.Month,
+          r.Present,
+          r.Absent,
+          r["Half Days"],
+          r.Late,
+          r.Leaves,
+          r.Hours,
+        ]),
+        startY: 45,
+      });
+    }
+  
+    doc.save(`${employeeFullName}_${scope}_attendance.pdf`);
+  };
+  
+  const exportExcel = (scope: "month" | "year") => {
+    const rows = scope === "month" ? buildMonthlyRows() : buildYearlyRows();
+    const ws = XLSX.utils.json_to_sheet(rows);
+  
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(
+      wb,
+      ws,
+      scope === "month" ? monthName : `Year ${dayjs(month).year()}`
+    );
+    XLSX.writeFile(wb, `${employeeFullName}_${scope}_attendance.xlsx`);
+  };  
+
+  const dropdownOptions = [
+    { label: "Download Monthly PDF", onClick: () => exportPDF("month") },
+    { label: "Download Monthly Excel", onClick: () => exportExcel("month") },
+    { label: "Download Yearly PDF", onClick: () => exportPDF("year") },
+    { label: "Download Yearly Excel", onClick: () => exportExcel("year") },
+  ];
+  
 
   return (
     <div className="flex flex-col md:flex-row gap-6 mt-10 bg-white border rounded-lg border-white">
@@ -58,6 +191,10 @@ const AttendanceCalendar: React.FC<Props> = ({ username, initialMonth, refreshKe
             value={month}
             onChange={(e) => handleMonthChange(e.target.value)}
           />
+
+          {/* Three-dot menu */}
+          <ThreeDotDropdown options={dropdownOptions} />
+
         </div>
 
         {/* Weekday headers */}
@@ -71,74 +208,48 @@ const AttendanceCalendar: React.FC<Props> = ({ username, initialMonth, refreshKe
 
         {/* Days grid */}
         <div className="mt-2 overflow-x-auto">
-          <div
-            className="grid grid-cols-7 gap-2"
-            style={{ minWidth: 7 * 84 }}
-          >
-            {/* Empty placeholders for offset */}
+          <div className="grid grid-cols-7 gap-2" style={{ minWidth: 7 * 84 }}>
             {Array.from({ length: firstDayIndex }).map((_, i) => (
               <div key={`empty-${i}`} className="h-20 rounded-lg border bg-white" />
             ))}
 
-            {/* Day cells */}
             {Array.from({ length: daysInMonth }, (_, i) => {
               const dateIso = dayjs(month).date(i + 1).format("YYYY-MM-DD");
               const record = recordMap.get(dateIso);
 
               const isSunday = dayjs(dateIso).day() === 0;
               const holiday = holidays.find((h) => h.date === dateIso);
-
               const beforeJoin =
                 joinDate && dayjs(dateIso).isBefore(dayjs(joinDate), "day");
               const afterToday = dayjs(dateIso).isAfter(today, "day");
 
               let status: string;
-              if (beforeJoin || afterToday) {
-                status = "UNMARKED"; // pre-join or future → gray
-              } else if (record) {
-                status = record.status;
-              } else if (isSunday || holiday) {
-                status = "HOLIDAY";
-              } else {
-                status = "ABSENT";
-              }
+              if (beforeJoin || afterToday) status = "UNMARKED";
+              else if (isSunday || holiday) status = "SUNDAY";
+              else if (record) status = record.status;
+              else status = "ABSENT";
 
               const colorClass = statusColors[status] ?? "bg-white";
-
               const tooltip = record
-                ? `Check-In: ${record.checkIn ?? "-"} | Check-Out: ${record.checkOut ?? "-"} | Hours: ${record.totalHours ?? 0}`
+                ? `Check-In: ${record.checkIn ?? "-"} | Check-Out: ${record.checkOut ?? "-"
+                } | Hours: ${record.totalHours ?? 0}`
                 : isSunday
-                ? "Sunday / Holiday"
-                : holiday
-                ? holiday.name
-                : beforeJoin
-                ? "Not joined yet"
-                : afterToday
-                ? "Future date"
-                : "Absent";
+                  ? "Sunday / Holiday"
+                  : holiday
+                    ? holiday.name
+                    : "No record";
 
               return (
                 <div
                   key={dateIso}
                   title={tooltip}
-                  className={`h-20 min-h-[72px] rounded-lg cursor-pointer flex flex-col justify-between p-2 text-xl border ${colorClass} hover:brightness-95 transition-shadow`}
+                  className={`h-20 min-h-[72px] rounded-lg cursor-pointer flex flex-col justify-between p-2 text-xl border ${colorClass}`}
                 >
-                  <div className="flex justify-between items-start">
-                    <span className="text-md font-semibold">{i + 1}</span>
-                  </div>
-                  <div className="text-[12px] w-full text-left">
-                    {record
-                      ? record.status
-                      : isSunday
-                      ? "Sunday"
-                      : holiday
-                      ? holiday.name
-                      : beforeJoin
-                      ? "Not Joined"
-                      : afterToday
-                      ? "Upcoming"
-                      : "Absent"}
-                  </div>
+                  <span className="text-md font-semibold">{i + 1}</span>
+                  <span className="text-[12px]">
+                    {record?.status ||
+                      (holiday ? holiday.name : beforeJoin ? "Not Joined" : afterToday ? "Upcoming" : status)}
+                  </span>
                 </div>
               );
             })}

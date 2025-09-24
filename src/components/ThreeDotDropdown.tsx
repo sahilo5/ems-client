@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 
 type DropdownOption = {
   label: string;
-  href: string;
+  href?: string; // optional now
   target?: "_self" | "_blank" | "_parent" | "_top";
+  onClick?: () => void; // new support
 };
 
 type ThreeDotDropdownProps = {
@@ -35,7 +36,7 @@ const ThreeDotDropdown: React.FC<ThreeDotDropdownProps> = ({ options = [] }) => 
         className="p-2 hover:bg-gray-200 rounded-full group"
       >
         <svg
-          className="w-5 h-5 text-light group-hover:text-dark"
+          className="w-5 h-5 text-dark group-hover:text-dark"
           fill="currentColor"
           viewBox="0 0 24 24"
         >
@@ -47,9 +48,19 @@ const ThreeDotDropdown: React.FC<ThreeDotDropdownProps> = ({ options = [] }) => 
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 bg-light border border-gray-200 rounded-md shadow-lg z-50">
           <ul className="py-1">
-            {options.map(({ label, href, target = "_self" }, index) => (
+            {options.map(({ label, href, target = "_self", onClick }, index) => (
               <li key={index}>
-                {href.startsWith("/") ? (
+                {onClick ? (
+                  <button
+                    onClick={() => {
+                      onClick();
+                      setIsOpen(false);
+                    }}
+                    className="w-full text-left block px-4 py-2 text-sm text-secondary hover:bg-white"
+                  >
+                    {label}
+                  </button>
+                ) : href?.startsWith("/") ? (
                   <Link
                     to={href}
                     target={target}

@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import LoginForm from "./pages/login/LoginFrom";
 import RegisterForm from "./pages/register/RegisterForm";
 import ProtectedRoute from "./components/ProtectedRoute";
-import DashboardLayout from "./pages/Layouts/DashboardLayout";
+import DashboardLayout from "./pages/layouts/DashboardLayout";
 import { getRoutesByRole } from "./routes";
 import React, { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
