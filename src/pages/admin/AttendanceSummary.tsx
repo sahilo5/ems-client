@@ -124,7 +124,7 @@ const buildYearlyRows = () => {
         ? `Attendance Report - ${monthName}`
         : `Attendance Report - Year ${dayjs(month).year()}`;
   
-    doc.setFontSize(16);
+    doc.setFontSize(18);
     doc.text(companyName || "Your Company Name", 14, 15);
     doc.setFontSize(12);
     doc.text(reportTitle, 14, 25);

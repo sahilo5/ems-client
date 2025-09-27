@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar, { NavItem } from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import Loader from "../../components/Loader";
-import { CalendarCheck2Icon, CalendarCheckIcon,  DoorOpen, HomeIcon, LogOut, Settings, UserIcon, Users2 } from "lucide-react";
+import { CalendarCheck2Icon, CalendarCheckIcon,  CircleDollarSign,  DollarSign,  DoorOpen, HomeIcon, LogOut, LucideBadgeDollarSign, Settings, UserIcon, Users2 } from "lucide-react";
 import { api } from "../../utils/api";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -62,6 +62,7 @@ const DashboardLayout: React.FC = () => {
             { label: "Employees", path: "/admin/employee-management", icon: <Users2 /> },
             { label: "Attendance", path: "/admin/attendance-management", icon: <CalendarCheckIcon /> },
             { label: "Leave", path: "/admin/leave-management", icon: <DoorOpen /> },
+            { label: "Salary", path: "/admin/salary-management", icon: <LucideBadgeDollarSign /> },
             { label: "Settings", path: "/admin/settings", icon: <Settings /> },
             { label: "Profile", path: "/admin/profile", icon: <UserIcon /> },
           );
