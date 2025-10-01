@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Browse from "../../components/Browse";
 import Button from "../../components/Button";
-import { Check, FileX, RefreshCcw } from "lucide-react";
+import { Check, FileX, RefreshCcw, X } from "lucide-react";
 import Loader from "../../components/Loader";
 import MiniWindow from "../../components/MiniWindow";
 import Form from "../../components/Form";
@@ -36,7 +36,7 @@ const AdminLeaveManagement = () => {
               variant="tertiary"
               title="Approve"
               disabled={
-                selectedRows.length !== 1 || selectedRows[0].status !== "PENDING"
+                selectedRows.length !== 1 || selectedRows[0].status !== ("PENDING" || "APPROVED")
               }
               onClick={() =>
                 handleUpdateLeaveStatus(selectedRows[0].id, "APPROVED")
@@ -50,14 +50,14 @@ const AdminLeaveManagement = () => {
               variant="tertiary"
               title="Reject"
               disabled={
-                selectedRows.length !== 1 || selectedRows[0].status !== "PENDING"
+                selectedRows.length !== 1 
               }
               onClick={() => {
                 setSelectedLeave(selectedRows[0]);
                 setIsOpenReject(true);
               }}
             >
-              <FileX className="size-5" />
+              <X className="size-5" />
             </Button>
 
             {/* Refresh button */}

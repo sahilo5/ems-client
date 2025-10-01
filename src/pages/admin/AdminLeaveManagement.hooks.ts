@@ -23,7 +23,7 @@ export const useAdminLeaveManagement = () => {
   const [loading, setLoading] = useState(false);
   const [selectedLeave, setSelectedLeave] = useState<Leave | null>(null);
   const [isOpenReject, setIsOpenReject] = useState(false);
-
+  const [popupOpen, setPopupOpen] = useState(false);
   // Get all leaves
   const handleGetAllLeaves = async () => {
     setLoading(true);
@@ -54,6 +54,7 @@ export const useAdminLeaveManagement = () => {
     status: "APPROVED" | "REJECTED",
     rejectionMsg?: string
   ) => {
+    setPopupOpen(true);
     setLoading(true);
     try {
       const response = await api(`/admin/leave/status/${leaveId}`, {
@@ -102,6 +103,6 @@ export const useAdminLeaveManagement = () => {
     isOpenReject,
     setIsOpenReject,
     handleGetAllLeaves,
-    handleUpdateLeaveStatus,
+    handleUpdateLeaveStatus,popupOpen, setPopupOpen
   };
 };

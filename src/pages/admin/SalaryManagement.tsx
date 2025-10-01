@@ -8,6 +8,7 @@ import { useSalaryManagement } from "./SalaryManagement.hooks";
 import MiniWindow from "../../components/MiniWindow";
 import EditSalaryConfig from "./EditSalaryConfig";
 import React from "react";
+import SalarySummary from "./SalarySummary";
 
 const SalaryManagement = () => {
   const { configs, logs, loading, fetchConfigs, fetchLogs, ConfigColumns, LogColumns } = useSalaryManagement();
@@ -19,7 +20,7 @@ const SalaryManagement = () => {
     <div className="space-y-2">
       <Tabs defaultIndex={0}>
         {/* Salary Config Tab */}
-        <Tab index={0} label="Payment"><></></Tab>
+        <Tab index={0} label="Payment"><SalarySummary/></Tab>
         <Tab index={1} label="Salary Config" onClick={fetchConfigs}>
           <Browse
             title="Salary Config"

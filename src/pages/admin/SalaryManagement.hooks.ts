@@ -30,7 +30,7 @@ export const useSalaryManagement = () => {
   const fetchLogs = async () => {
     setLoading(true);
     try {
-      const res = await api("/admin/salary/logs", {
+      const res = await api("/admin/salary/salary-logs/all", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -77,10 +77,11 @@ export const useSalaryManagement = () => {
   ];
 
   const LogColumns = [
-    { header: "Employee", accessor: "user.username" },
-    { header: "Action", accessor: "action" },
-    { header: "Amount", accessor: "amount" },
-    { header: "Date", accessor: "date" },
+    { header: "Employee", accessor: "employeeName" },
+    { header: "Salary Month", accessor: "salaryMonth" },
+    { header: "Amount Paid", accessor: "amountPaid" },
+    { header: "Remarks", accessor: "remarks" },
+    { header: "Status", accessor: "status" },
   ];
 
   return { configs, logs, loading, fetchConfigs, fetchLogs, updateConfig, ConfigColumns, LogColumns };

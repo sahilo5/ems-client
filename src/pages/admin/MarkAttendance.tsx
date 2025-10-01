@@ -79,24 +79,23 @@ const MarkAttendance = () => {
           )}
         </div>
 
-        {/* Date */}
-        <div className="w-full md:w-1/4">
-          <Form
-            fields={[
-              {
-                type: "date",
-                name: "date",
-                label: "Date",
-                value: date,
-                onChange: setDate,
-                error: errors.dateError,
-              },
-            ]}
-          />
-        </div>
-
-        {mode === "mark" ? (
-          // Action dropdown only for Mark
+        {mode === "mark" ? (<>
+          {/* Date */}
+          <div className="w-full md:w-1/4">
+            <Form
+              fields={[
+                {
+                  type: "date",
+                  disabled:true,
+                  name: "date",
+                  label: "Date",
+                  value: date,
+                  onChange: setDate,
+                  error: errors.dateError,
+                },
+              ]}
+            />
+          </div>
           <div className="w-full md:w-1/4">
             <Dropdown
               label="Action"
@@ -108,9 +107,26 @@ const MarkAttendance = () => {
               onChange={setActionType}
             />
           </div>
+        </>
         ) : (
           // Checkin & Checkout inputs for Update
           <>
+
+            {/* Date */}
+            <div className="w-full md:w-1/4">
+              <Form
+                fields={[
+                  {
+                    type: "date",
+                    name: "date",
+                    label: "Date",
+                    value: date,
+                    onChange: setDate,
+                    error: errors.dateError,
+                  },
+                ]}
+              />
+            </div>
             <div className="w-full md:w-1/4">
               <TimeInput
                 label="Check-In"
