@@ -11,6 +11,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { useToast } from "../../components/ToastProvider";
+import Dropdown from "../../components/Dropdown";
 
 const SalarySummary: React.FC = () => {
     const { configs } = useSalaryManagement();
@@ -18,11 +19,11 @@ const SalarySummary: React.FC = () => {
     const [month, setMonth] = useState(dayjs().format("YYYY-MM"));
     const [popupOpen, setPopupOpen] = useState(false);
 
-    const { data: monthData, loading: monthLoading,checkIfDone } = useSalarySummary(username, month);
+    const { data: monthData, loading: monthLoading, checkIfDone } = useSalarySummary(username, month);
     const { fetchYearData } = useYearlySalarySummary();
 
     const { companyName } = useContext(CompanyContext);
-    const { handlePayConfirm} = useSalaryPayment(
+    const { handlePayConfirm } = useSalaryPayment(
         username,
         month
     );
@@ -173,11 +174,15 @@ const SalarySummary: React.FC = () => {
 
 
     return (
-        <div className="space-y-6 p-4">
+        <div className="space-y-6 ">
             {/* Filters */}
-            <div className="md:flex-row space-x-4 items-center">
+            <div className="md:flex-row space-x-4 items-center p-4">
                 <select
-                    className="border rounded px-3 py-2 text-sm w-full md:w-auto"
+                    className="border px-4 py-2 pr-10 text-sm w-50
+                    rounded-md border-secondary bg-white text-dark
+            focus:outline-none focus:ring-2 focus:ring-primary
+            disabled:opacity-50 disabled:cursor-not-allowed
+            transition-all"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 >
@@ -191,7 +196,11 @@ const SalarySummary: React.FC = () => {
 
                 <input
                     aria-label="Select month and year"
-                    className="border rounded px-2 py-1"
+                    className="border px-3 py-2 m-2 text-sm w-50
+                    rounded-md border-secondary bg-white text-dark
+            focus:outline-none focus:ring-2 focus:ring-primary
+            disabled:opacity-50 disabled:cursor-not-allowed
+            transition-all"
                     type="month"
                     value={month}
                     onChange={(e) => setMonth(e.target.value)}

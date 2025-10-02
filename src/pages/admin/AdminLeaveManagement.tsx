@@ -36,7 +36,7 @@ const AdminLeaveManagement = () => {
               variant="tertiary"
               title="Approve"
               disabled={
-                selectedRows.length !== 1 || selectedRows[0].status !== ("PENDING" || "APPROVED")
+                selectedRows.length !== 1
               }
               onClick={() =>
                 handleUpdateLeaveStatus(selectedRows[0].id, "APPROVED")

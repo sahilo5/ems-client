@@ -42,7 +42,7 @@ function Browse<T extends Record<string, any>>({
       )
     );
   }, [data]);
-  
+
   const toggleRowSelection = (row: T) => {
     setSelectedRows((prev) =>
       prev.includes(row)
@@ -219,35 +219,46 @@ function Browse<T extends Record<string, any>>({
           </thead>
 
           <tbody>
-          {paginatedData.length > 0 ? (paginatedData.map((row, rowIdx) => (
-              <tr
-                key={rowIdx}
-                className={rowIdx % 2 === 0 ? "bg-white border border-gray-200" : "bg-gray-100 border border-gray-200"}
-              >
-                {selectable && (
-                  <td className="p-1 border border-gray-200 hover:cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={selectedRows.includes(row)}
-                      onChange={() => toggleRowSelection(row)}
-                      className="size-3.5 hover:cursor-pointer"
-                    />
-                  </td>
-                )}
-                {columns.map((col, colIdx) => (
-                  <td key={colIdx} className="px-4 py-2 text-gray-800 border border-gray-200">
-                    {String(row[col.accessor])}
-                  </td>
-                ))}
-              </tr>
-            ))): (
+            {paginatedData.length > 0 ? (
+              paginatedData.map((row, rowIdx) => (
+                <tr
+                  key={rowIdx}
+                  onDoubleClick={() => toggleRowSelection(row)}
+                  className={`border border-gray-200 transition-colors duration-200
+          ${rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"} hover:bg-gray-300 cursor-pointer`}
+                >
+                  {selectable && (
+                    <td className="p-1 border border-gray-200 hover:cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedRows.includes(row)}
+                        onChange={() => toggleRowSelection(row)}
+                        className="size-3.5 hover:cursor-pointer"
+                      />
+                    </td>
+                  )}
+                  {columns.map((col, colIdx) => (
+                    <td
+                      key={colIdx}
+                      className="px-4 py-2 text-gray-800 border border-gray-200"
+                    >
+                      {String(row[col.accessor])}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : (
               <tr>
-                <td colSpan={columns.length} className="text-center p-6 text-red-500">
+                <td
+                  colSpan={columns.length + (selectable ? 1 : 0)}
+                  className="text-center p-6 text-red-500"
+                >
                   No data found.
                 </td>
               </tr>
             )}
           </tbody>
+
 
         </table>
       </div>

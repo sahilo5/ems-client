@@ -17,7 +17,7 @@ const AdminDashboard: React.FC = () => {
         <Card title="Total Employees" value={data?.totalEmployees ?? "-"} icon={<Users />} />
         <Card title="Total Users" value={data?.totalUsers ?? "-"} icon={<Users />} />
         <Card title="Attendance Today" value={data?.todayAttendance ?? "-"} icon={<CalendarCheck />} />
-        <Card title="Total Payroll" value={`$${data?.payroll ?? 0}`} icon={<DollarSign />} />
+        {/* <Card title="Total Payroll" value={`$${data?.payroll ?? 0}`} icon={<DollarSign />} /> */}
       </div>
 
       {/* Attendance Analytics */}
