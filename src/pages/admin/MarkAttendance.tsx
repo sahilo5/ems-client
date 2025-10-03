@@ -40,27 +40,29 @@ const MarkAttendance = () => {
   return (
     <div className="w-full bg-gray-200 shadow-lg p-4 rounded-2xl border border-gray-200 mx-auto">
       {/* Mode Toggle */}
-      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-6 border-2 rounded-lg border-accent p-2 w-full sm:w-90">        <label className="flex items-center gap-2">
-        <input
-          type="radio"
-          name="mode"
-          value="mark"
-          checked={mode === "mark"}
-          onChange={() => setMode("mark")}
-        />
-        Mark Attendance
-      </label>
-        <label className="flex items-center gap-2">
-          <input
-            type="radio"
-            name="mode"
-            value="update"
-            checked={mode === "update"}
-            onChange={() => setMode("update")}
-          />
+      <div className="flex gap-1 bg-white rounded-full p-1 w-fit mb-3">
+        <button
+          onClick={() => setMode("mark")}
+          className={`px-4 py-2 rounded-full transition-all duration-300 ease-in-out ${mode === "mark"
+              ? "bg-accent text-white shadow-md"
+              : "text-gray-700 hover:bg-gray-200"
+            }`}
+        >
+          Mark Attendance
+        </button>
+
+        <button
+          onClick={() => setMode("update")}
+          className={`px-4 py-2 rounded-full transition-all duration-300 ease-in-out ${mode === "update"
+              ? "bg-accent text-white shadow-md"
+              : "text-gray-700 hover:bg-gray-200"
+            }`}
+        >
           Update Attendance
-        </label>
+        </button>
       </div>
+
+
 
       <form
         onSubmit={handleSubmit}
@@ -86,7 +88,7 @@ const MarkAttendance = () => {
               fields={[
                 {
                   type: "date",
-                  disabled:true,
+                  disabled: true,
                   name: "date",
                   label: "Date",
                   value: date,
