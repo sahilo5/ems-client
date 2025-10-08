@@ -9,6 +9,8 @@ import MiniWindow from "../../components/MiniWindow";
 import EditSalaryConfig from "./EditSalaryConfig";
 import React from "react";
 import SalarySummary from "./SalarySummary";
+import Advances from "./Advances";
+import OtherPayments from "./OtherPayments";
 
 const SalaryManagement = () => {
   const { configs, logs, loading, fetchConfigs, fetchLogs, ConfigColumns, LogColumns } = useSalaryManagement();
@@ -53,6 +55,16 @@ const SalaryManagement = () => {
         <Tab index={2} label="Logs" onClick={fetchLogs}>
           <Browse title="Salary Logs" data={logs} columns={LogColumns} selectable={false} />
           {loading && <Loader size={48} color="text-primary" />}
+        </Tab>
+
+        {/* Advances Tab */}
+        <Tab index={3} label="Advances">
+          <Advances />
+        </Tab>
+
+        {/* Other Payments Tab */}
+        <Tab index={4} label="Other Payments">
+          <OtherPayments />
         </Tab>
       </Tabs>
 

@@ -6,6 +6,7 @@ import AttendanceManagement from "../pages/admin/AttendanceManagement";
 import AdminLeaveManagement from "../pages/admin/AdminLeaveManagement";
 import SettingsLayout from "../pages/layouts/SettingsLayout";
 import SalaryManagement from "../pages/admin/SalaryManagement";
+import Reports from "../pages/admin/Reports";
 
 export const adminRoutes = [
   { path: "/admin/dashboard", element: <Dashboard /> },
@@ -15,4 +16,5 @@ export const adminRoutes = [
   { path: "/admin/leave-management", element: <AdminLeaveManagement /> },
   { path: "/admin/settings", element: <SettingsLayout /> },
   { path: "/admin/salary-management", element: <SalaryManagement /> },
+  { path: "/admin/reports", element: <Reports /> },
 ];

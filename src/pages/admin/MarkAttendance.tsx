@@ -62,8 +62,6 @@ const MarkAttendance = () => {
         </button>
       </div>
 
-
-
       <form
         onSubmit={handleSubmit}
         className="flex flex-col md:flex-row gap-4 items-end"
