@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { useToast } from "../../components/ToastProvider";
+import { api } from "../../utils/api";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 export const useAddAdvance = (onClose: () => void) => {
-  const [configId, setConfigId] = useState("");
+  const { token } = useContext(AuthContext);
+  const [username, setUsername] = useState("");
   const [advanceDate, setAdvanceDate] = useState("");
   const [title, setTitle] = useState("");
   const [remark, setRemark] = useState("");
@@ -13,7 +17,7 @@ export const useAddAdvance = (onClose: () => void) => {
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!configId.trim()) newErrors.configIdError = "Config ID is required";
+    if (!username.trim()) newErrors.usernameError = "Username is required";
     if (!advanceDate) newErrors.advanceDateError = "Advance date is required";
     if (!title.trim()) newErrors.titleError = "Title is required";
     if (!remark.trim()) newErrors.remarkError = "Remark is required";
@@ -24,17 +28,40 @@ export const useAddAdvance = (onClose: () => void) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (validate()) {
-      // Pass data to parent or API call here
-      onClose();
-      showToast("Advance added (mock)", "success");
+      try {
+        const payload = {
+          username,
+          advanceDate,
+          title,
+          remark,
+          amount: parseFloat(amount),
+          status,
+        };
+        const res = await api("/admin/salary/advances", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+        if (res.success) {
+          showToast("Advance added successfully", "success");
+          onClose();
+        } else {
+          showToast(res.message, "error");
+        }
+      } catch (err: any) {
+        showToast(err.message, "error");
+      }
     }
   };
 
   return {
-    configId,
-    setConfigId,
+    username,
+    setUsername,
     advanceDate,
     setAdvanceDate,
     title,

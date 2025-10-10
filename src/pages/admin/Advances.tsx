@@ -8,21 +8,8 @@ import { useAdvances } from "./Advances.hooks";
 import { Plus } from "lucide-react";
 
 const Advances: React.FC = () => {
-  const { advances, loading, fetchAdvances, AdvanceColumns, addAdvance } = useAdvances();
+  const { advances, loading, fetchAdvances, AdvanceColumns } = useAdvances();
   const [openAdd, setOpenAdd] = useState(false);
-
-  const handleAddAdvance = async (advanceData: any) => {
-    const payload = {
-      configId: parseInt(advanceData.configId),
-      advanceDate: advanceData.advanceDate,
-      title: advanceData.title,
-      remark: advanceData.remark,
-      amount: parseFloat(advanceData.amount),
-      status: advanceData.status,
-    };
-    await addAdvance(payload);
-    setOpenAdd(false);
-  };
 
   return (
     <div className="space-y-2">
@@ -33,9 +20,8 @@ const Advances: React.FC = () => {
         selectable={false}
         headerActions={() => (
           <div className="space-x-2">
-            <Button variant="primary" onClick={() => setOpenAdd(true)}>
+            <Button variant="tertiary" title="Add Advance" onClick={() => setOpenAdd(true)}>
               <Plus className="size-5" />
-              Add Advance
             </Button>
           </div>
         )}

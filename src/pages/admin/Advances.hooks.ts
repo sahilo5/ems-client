@@ -6,7 +6,7 @@ import { useToast } from "../../components/ToastProvider";
 export type Advance = {
   id: number;
   employeeName: string;
-  configId: number;
+  username: string;
   advanceDate: string;
   title: string;
   remark: string;

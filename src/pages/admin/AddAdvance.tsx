@@ -2,15 +2,17 @@ import React from "react";
 import Form from "../../components/Form";
 import { useAddAdvance } from "./AddAdvance.hooks";
 import Button from "../../components/Button";
+import { useSalaryManagement } from "./SalaryManagement.hooks";
 
 type AddAdvanceProps = {
   onClose: () => void;
 };
 
 const AddAdvance: React.FC<AddAdvanceProps> = ({ onClose }) => {
+  const { configs } = useSalaryManagement();
   const {
-    configId,
-    setConfigId,
+    username,
+    setUsername,
     advanceDate,
     setAdvanceDate,
     title,
@@ -34,13 +36,16 @@ const AddAdvance: React.FC<AddAdvanceProps> = ({ onClose }) => {
         className="mt-4"
         fields={[
           {
-            type: "number",
-            name: "configId",
-            label: "Config ID",
-            value: configId,
-            onChange: setConfigId,
-            error: errors.configIdError,
-            placeholder: "Enter config ID",
+            type: "dropdown",
+            name: "username",
+            label: "Employee",
+            value: username,
+            onChange: setUsername,
+            error: errors.usernameError,
+            options: configs.map((c) => ({
+              label: c.employeeName,
+              value: c.username,
+            })),
           },
           {
             type: "date",
