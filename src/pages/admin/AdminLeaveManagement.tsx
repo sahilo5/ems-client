@@ -29,44 +29,44 @@ const AdminLeaveManagement = () => {
         data={leaves}
         columns={LeaveColumnHeaders}
         selectable={true}
-        headerActions={(selectedRows) => (
-          <div className="space-x-2">
+        rowActions={(row) => (
+          <div className="flex gap-2">
             {/* Approve button */}
             <Button
-              variant="tertiary"
+              variant="safe"
               title="Approve"
-              disabled={
-                selectedRows.length !== 1
-              }
-              onClick={() =>
-                handleUpdateLeaveStatus(selectedRows[0].id, "APPROVED")
-              }
+              onClick={() => handleUpdateLeaveStatus(row.id, "APPROVED")}
             >
-              <Check className="size-5" />
+              <Check className="size-4" />
             </Button>
 
             {/* Reject button */}
             <Button
-              variant="tertiary"
+              variant="danger"
               title="Reject"
-              disabled={
-                selectedRows.length !== 1 
-              }
               onClick={() => {
-                setSelectedLeave(selectedRows[0]);
+                setSelectedLeave(row);
                 setIsOpenReject(true);
               }}
             >
-              <X className="size-5" />
-            </Button>
-
-            {/* Refresh button */}
-            <Button variant="tertiary" title="Refresh" onClick={handleGetAllLeaves}>
-              <RefreshCcw className="size-5" />
+              <X className="size-4" />
             </Button>
           </div>
         )}
+        headerActions={
+          <div className="space-x-2">
+            {/* Refresh Button */}
+            <Button
+              variant="refresh"
+              title="Refresh"
+              onClick={handleGetAllLeaves}
+            >
+              <RefreshCcw className="size-5" />
+            </Button>
+          </div>
+        }
       />
+
 
       {loading && (
         <div className="flex items-center justify-center bg-light">

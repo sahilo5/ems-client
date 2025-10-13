@@ -83,11 +83,10 @@ function Browse<T extends Record<string, unknown>>({
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`px-3 py-1 rounded-md text-sm ${
-            i === currentPage
+          className={`px-3 py-1 rounded-md text-sm ${i === currentPage
               ? "bg-accent text-white"
               : "bg-white/20 text-gray-800 hover:bg-white/40"
-          }`}
+            }`}
         >
           {i}
         </button>
@@ -142,16 +141,16 @@ function Browse<T extends Record<string, unknown>>({
       {/* Table */}
       <div className="w-full overflow-x-auto h-auto rounded-lg">
         <table className="w-full table-auto text-sm border border-accent rounded-lg">
-          <thead className="backdrop-blur-sm bg-accent/60 text-dark border-accent border-1 shadow-inner shadow-accent/40 rounded-t-lg">
+          <thead className="backdrop-blur-sm bg-accent/60 text-light border-accent border-1 shadow-inner shadow-accent/40 rounded-t-lg">
             <tr>
-              {columns.map((col) => {
+              {columns.map((col) => { 
                 const isSorted = sortBy === col.accessor;
                 const icon = isSorted
                   ? sortOrder === "asc"
                     ? " ▲"
                     : sortOrder === "desc"
-                    ? " ▼"
-                    : ""
+                      ? " ▼"
+                      : ""
                   : "";
 
                 return (
@@ -170,14 +169,14 @@ function Browse<T extends Record<string, unknown>>({
                         setSortOrder("asc");
                       }
                     }}
-                    className="px-6 py-3 cursor-pointer select-none font-semibold uppercase text-xs tracking-wider"
+                    className="px-6 py-3 cursor-pointer select-none font-semibold uppercase text-md tracking-wider"
                   >
                     {col.header}
                     <span className="ml-1">{icon}</span>
                   </th>
                 );
               })}
-              {rowActions && <th className="px-6 py-3 text-xs font-semibold">Actions</th>}
+              {rowActions && <th className="px-6 py-3 text-md font-semibold uppercase">Actions</th>}
             </tr>
           </thead>
 
@@ -186,9 +185,8 @@ function Browse<T extends Record<string, unknown>>({
               paginatedData.map((row, rowIdx) => (
                 <tr
                   key={rowIdx}
-                  className={`border border-accent/10 transition-colors duration-200 ${
-                    rowIdx % 2 === 0 ? "bg-white/80" : "bg-white/60"
-                  } hover:bg-white cursor-pointer`}
+                  className={`border border-accent/10 transition-colors duration-200 ${rowIdx % 2 === 0 ? "bg-white/80" : "bg-white/60"
+                    } hover:bg-white cursor-pointer`}
                 >
                   {columns.map((col, colIdx) => (
                     <td key={colIdx} className="px-4 py-2 text-gray-800">
@@ -197,9 +195,10 @@ function Browse<T extends Record<string, unknown>>({
                   ))}
 
                   {rowActions && (
-                    <td className="px-4 py-2 gap-2">
+                    <td className="px-4 py-2 flex items-center justify-center gap-2">
                       {rowActions(row)}
                     </td>
+
                   )}
                 </tr>
               ))

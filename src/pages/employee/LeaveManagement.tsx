@@ -22,12 +22,6 @@ const LeaveManagement = () => {
             </div>
           </Tab>
   
-          {/* --- Settings Tab --- */}
-          <Tab index={3} label="Settings">
-            <div className="flex flex-col space-y-4">
-              
-            </div>
-          </Tab>
         </Tabs>
       </div>
     );

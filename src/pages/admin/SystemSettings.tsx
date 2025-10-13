@@ -164,57 +164,59 @@ const SystemSettings = () => {
         onClose={() => setIsOpenHolidays(false)}
       >
         <Browse
-          title="Holiday List"
-          data={holidayData}
-          columns={HolidayColumns}
-          selectable={true}
-          headerActions={(selectedRows) => (
-            <div className="space-x-2 flex">
-              {/* Add */}
-              <Button
-                variant="tertiary"
-                title="Add Holiday"
-                onClick={() => {
-                  setEditingHoliday(null); // add mode
-                  setIsHolidayFormOpen(true);
-                }}
-              >
-                <Plus />
-              </Button>
+  title="Holiday List"
+  data={holidayData}
+  columns={HolidayColumns}
+  selectable={true}
+  rowActions={(row) => (
+    <div className="flex gap-2">
+      {/* Edit Holiday */}
+      <Button
+        variant="refresh"
+        title="Edit"
+        onClick={() => {
+          const idx = holidayData.findIndex(
+            (h) => h.date === row.date && h.name === row.name
+          );
+          if (idx !== -1) {
+            setEditingHoliday({ index: idx, ...holidayData[idx] });
+            setIsHolidayFormOpen(true);
+          }
+        }}
+      >
+        <Edit className="size-4" />
+      </Button>
 
-              {/* Edit */}
-              <Button
-                variant="tertiary"
-                title="Edit Holiday"
-                disabled={selectedRows.length !== 1}
-                onClick={() => {
-                  const idx = holidayData.findIndex(
-                    (h) => h.date === selectedRows[0].date && h.name === selectedRows[0].name
-                  );
-                  if (idx !== -1) {
-                    setEditingHoliday({ index: idx, ...holidayData[idx] });
-                    setIsHolidayFormOpen(true);
-                  }
-                }}
-              >
-                <Edit />
-              </Button>
+      {/* Delete Holiday */}
+      <Button
+        variant="danger"
+        title="Delete"
+        onClick={() => {
+          setSelectedToDelete([row]);
+          setDeleteConfirmOpen(true);
+        }}
+      >
+        <FileX className="size-4" />
+      </Button>
+    </div>
+  )}
+  headerActions={
+    <div className="space-x-2 flex">
+      {/* Add Holiday */}
+      <Button
+        variant="tertiary"
+        title="Add Holiday"
+        onClick={() => {
+          setEditingHoliday(null); // Add mode
+          setIsHolidayFormOpen(true);
+        }}
+      >
+        <Plus className="size-5" />
+      </Button>
+    </div>
+  }
+/>
 
-              {/* Delete */}
-              <Button
-                variant="tertiary"
-                title="Delete Holiday"
-                disabled={selectedRows.length === 0}
-                onClick={() => {
-                  setSelectedToDelete(selectedRows);
-                  setDeleteConfirmOpen(true);
-                }}
-              >
-                <FileX />
-              </Button>
-            </div>
-          )}
-        />
       </MiniWindow>
 
 

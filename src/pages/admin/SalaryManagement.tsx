@@ -25,29 +25,39 @@ const SalaryManagement = () => {
         <Tab index={0} label="Payment"><SalarySummary/></Tab>
         <Tab index={1} label="Salary Config" onClick={fetchConfigs}>
           <Browse
-            title="Salary Config"
-            data={configs}
-            columns={ConfigColumns}
-            selectable={true}
-            headerActions={(selectedRows) => (
-              <div className="space-x-2">
-                <Button
-                  variant="tertiary"
-                  title="Edit"
-                  disabled={selectedRows.length !== 1}
-                  onClick={() => {
-                    setEditData(selectedRows[0]);
-                    setOpenEdit(true);
-                  }}
-                >
-                  <Edit className="size-5" />
-                </Button>
-                <Button variant="tertiary" title="Refresh" onClick={fetchConfigs}>
-                  <RefreshCcw className="size-5" />
-                </Button>
-              </div>
-            )}
-          />
+  title="Salary Config"
+  data={configs}
+  columns={ConfigColumns}
+  selectable={true}
+  rowActions={(row) => (
+    <div className="flex gap-2">
+      {/* Row-level Edit */}
+      <Button
+        variant="refresh"
+        title="Edit"
+        onClick={() => {
+          setEditData(row);
+          setOpenEdit(true);
+        }}
+      >
+        <Edit className="size-4" />
+      </Button>
+    </div>
+  )}
+  headerActions={
+    <div className="space-x-2">
+      {/* Refresh Button */}
+      <Button
+        variant="tertiary"
+        title="Refresh"
+        onClick={fetchConfigs}
+      >
+        <RefreshCcw className="size-5" />
+      </Button>
+    </div>
+  }
+/>
+
           {loading && <Loader size={48} color="text-primary" />}
         </Tab>
 

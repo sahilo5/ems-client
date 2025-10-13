@@ -14,18 +14,21 @@ const Advances: React.FC = () => {
   return (
     <div className="space-y-2">
       <Browse
-        title="Advances"
-        data={advances}
-        columns={AdvanceColumns}
-        selectable={false}
-        headerActions={() => (
-          <div className="space-x-2">
-            <Button variant="tertiary" title="Add Advance" onClick={() => setOpenAdd(true)}>
-              <Plus className="size-5" />
-            </Button>
-          </div>
-        )}
-      />
+  title="Advances"
+  data={advances}
+  columns={AdvanceColumns}
+  headerActions={
+    
+      <Button
+        variant="tertiary"
+        title="Add Advance"
+        onClick={() => setOpenAdd(true)}
+      >
+        <Plus className="size-5" />
+      </Button>
+  }
+/>
+
       {loading && <Loader size={48} color="text-primary" />}
 
       {/* Add Advance Window */}
