@@ -40,11 +40,17 @@ const Navbar: React.FC<NavbarProps> = ({
   }, []);
 
   return (
-    <header className="w-full h-14 flex items-center bg-white/30 justify-between px-4 relative">
+    <header className="w-full h-14 flex items-center justify-between px-4 relative">
       {/* Logo / Title */}
-      <div className="text-xl sm:text-2xl font-bold text-dark truncate">
-        {companyName}
-      </div>
+      <div
+  className="text-xl sm:text-2xl font-bold truncate 
+             bg-gradient-to-r from-white/90 via-blue-300/80 to-white
+             text-transparent bg-clip-text 
+             transition-all duration-700 
+             cursor-none
+             hover:scale-101 hover:from-white-200/90 hover:to-white/90">
+  {companyName}
+</div>
 
       {/* Right Side */}
       <div className="flex items-center space-x-4">
@@ -78,7 +84,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
         {/* User Info */}
         <div
-          className="flex items-center space-x-2 cursor-pointer "
+          className="flex items-center space-x-1 cursor-pointer backdrop:blur-lg p-2 mt-2 bg-white/40 rounded-full border-white/30 border-1 hover:bg-white/60 "
           onClick={onUserClick}
         >
           <UserCircle2 className="w-6 h-6 text-dark" />

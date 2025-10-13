@@ -77,7 +77,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div
       className={`${collapsed ? "w-15" : "w-40"
-        } h-full backdrop-blur-lg bg-white/30 text-dark flex flex-col transition-all duration-300`}
+        } h-full backdrop-blur-lg bg-white/40 border-r-1 border-white/30 shadow-inner shadow-white/30 text-dark flex flex-col transition-all duration-300`}
     >
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-none">

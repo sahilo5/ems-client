@@ -89,7 +89,6 @@ export const useSystemSettings = () => {
     }
   };
   
-  // ✅ Validation per type
   const validateValue = (s: Setting, value: any): string | null => {
     if (s.dataType === "INT" && isNaN(Number(value))) {
       return `${s.title} must be a number`;
@@ -177,7 +176,7 @@ export const useSystemSettings = () => {
   };
 
 
-  const handleAddHoliday = (newHoliday: { date: string; name: string }) => {
+  const handleAddHoliday = (newHoliday: { date: string; name: string; type: string }) => {
     const holidaySetting = settings.find((s) => s.key === "calendar_holidays_2025");
     if (!holidaySetting) return;
 
@@ -185,7 +184,7 @@ export const useSystemSettings = () => {
     updateLocalSetting(holidaySetting.id, updated);
   };
 
-  const handleUpdateHoliday = (index: number, updatedHoliday: { date: string; name: string }) => {
+  const handleUpdateHoliday = (index: number, updatedHoliday: { date: string; name: string, type:string }) => {
     const holidaySetting = settings.find((s) => s.key === "calendar_holidays_2025");
     if (!holidaySetting) return;
 
@@ -204,7 +203,7 @@ export const useSystemSettings = () => {
 
       {/* Holidays Modal */}
       const [isHolidayFormOpen, setIsHolidayFormOpen] = useState(false);
-const [editingHoliday, setEditingHoliday] = useState<null | { index: number; date: string; name: string }>(null);
+const [editingHoliday, setEditingHoliday] = useState<null | { index: number; date: string; name: string; type: string }>(null);
 const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 const [selectedToDelete, setSelectedToDelete] = useState<{ date: string; name: string }[]>([]);
 
@@ -212,6 +211,7 @@ const [selectedToDelete, setSelectedToDelete] = useState<{ date: string; name: s
 // states
 const [holidayDate, setHolidayDate] = useState(new Date().toISOString().slice(0, 10));
 const [holidayName, setHolidayName] = useState("");
+const [holidayType, setHolidayType] = useState("");
 const [errors, setErrors] = useState<{ date?: string; name?: string }>({});
 
 // sync when editingHoliday changes
@@ -219,10 +219,12 @@ useEffect(() => {
   if (editingHoliday) {
     setHolidayDate(editingHoliday.date);
     setHolidayName(editingHoliday.name);
+    setHolidayType(editingHoliday.type);
   } else {
     // reset for add mode
     setHolidayDate(new Date().toISOString().slice(0, 10));
     setHolidayName("");
+    setHolidayType("");
   }
 }, [editingHoliday, isHolidayFormOpen]);
 
@@ -253,5 +255,6 @@ useEffect(() => {
     holidayName, setHolidayName,
     errors, setErrors,
     holidayData, fetchHolidayData,
+    holidayType, setHolidayType,
   };
 };

@@ -4,7 +4,7 @@ type ButtonProps = {
   children: React.ReactNode;
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
-  variant?: "primary" | "secondary" | "danger" | "tertiary"| "safe";
+  variant?: "primary" | "secondary" | "danger" | "tertiary"| "safe"| "refresh";
   disabled?: boolean;
   className?: string;
   title?: string;  
@@ -23,20 +23,27 @@ const Button: React.FC<ButtonProps> = ({
 
   switch (variant) {
     case "primary":
-      variantClass = "bg-primary/50 border shadow-sm border-primary backdrop-blur-sm text-dark hover:bg-primary/40 text-Black cursor-pointer hover:shadow-lg hover:border-2 font-bold";
+      variantClass = "bg-primary text-light cursor-pointer hover:shadow-md font-bold";
       break;
     case "secondary":
-      variantClass = "bg-white/50 border shadow-sm border-white backdrop-blur-sm text-dark hover:bg-white/40 text-Black cursor-pointer hover:shadow-lg hover:border-2 font-bold";
+      variantClass = "bg-white/50 border shadow-sm border-white backdrop-blur-sm text-dark hover:bg-white/40 text-Black cursor-pointer hover:shadow-lg font-bold";
       break;
     case "tertiary":
-      variantClass = "bg-accent/50 border shadow-sm border-accent backdrop-blur-sm text-dark hover:bg-accent/40 text-Black cursor-pointer hover:shadow-lg hover:border-2 font-bold";
-      break;
-    case "danger":
-      variantClass = "bg-red/50 border shadow-sm border-red backdrop-blur-sm text-dark hover:bg-red/40 text-Black cursor-pointer hover:shadow-lg hover:border-2 font-bold";
+      variantClass = "bg-accent text-light cursor-pointer hover:shadow-md font-bold";
       break;
     case "safe":
-      variantClass = "bg-green/50 border shadow-sm border-green backdrop-blur-sm text-dark hover:bg-green/40 text-Black cursor-pointer hover:shadow-lg hover:border-2 font-bold";
+      variantClass =
+        "bg-green-300 border border-green-400 text-dark hover:bg-green-300 cursor-pointer hover:shadow-lg font-bold";
       break;
+    case "danger":
+      variantClass =
+        "bg-red-500/50 border border-red-600 text-dark hover:bg-red-400/70 cursor-pointer hover:shadow-lg font-bold";
+      break;
+    case "refresh":
+      variantClass =
+        "bg-refresh/80 border border-refresh text-dark hover:bg-refresh/90 cursor-pointer hover:shadow-lg font-bold";
+      break;
+
     default:
       variantClass = "bg-primary/50 border shadow-sm border-primary backdrop-blur-sm text-dark hover:bg-primary/40 text-Black cursor-pointer hover:shadow-lg hover:border-2 font-bold";
   }

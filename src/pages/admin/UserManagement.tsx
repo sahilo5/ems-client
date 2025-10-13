@@ -46,34 +46,37 @@ const UserManagement = () => {
             title="Roles"
             data={UsersWithRoleData}
             columns={UserWithRoleColumnHeaders}
-            selectable={true}
-            headerActions={(selectedRows) => (
-              <div className="space-x-2">
+            rowActions={(row) => (
+              <div className="flex gap-2">
+                {/* Assign Role */}
                 <Button
-                  variant="tertiary"
+                  variant="safe"
                   title="Assign Role"
-                  disabled={selectedRows.length !== 1}
-                  onClick={
-                    () => {
-                      setAssignUserData(selectedRows[0]);
-                      setOpenAssignRole(true);
-                    }
-                  }
+                  onClick={() => {
+                    setAssignUserData(row);
+                    setOpenAssignRole(true);
+                  }}
                 >
-                  <span><CheckCheck className="size-5" /></span>
-                </Button>
-                <Button variant="tertiary" title="Refresh" onClick={handleUsersWithRoles}>
-                  <span><RefreshCcw className="size-5" /></span>
+                  <CheckCheck className="size-4" />
                 </Button>
               </div>
             )}
+            headerActions={
+              <div className="space-x-2">
+                <Button variant="tertiary" title="Refresh" onClick={handleUsersWithRoles}>
+                  <RefreshCcw className="size-5" />
+                </Button>
+              </div>
+            }
           />
+
           {loading && (
-            <div className="flex items-center justify-center bg-light">
+            <div className="flex items-center justify-center bg-none">
               <Loader size={48} color="text-primary" />
             </div>
           )}
         </Tab>
+
 
         {/* --- Users Tab --- */}
         <Tab index={1} label="Users" onClick={handleGetAllUsers}>
@@ -81,55 +84,61 @@ const UserManagement = () => {
             title="Users"
             data={UserData}
             columns={UserColumnHeaders}
-            selectable={true}
-            headerActions={(selectedRows) => (
-              <div className="space-x-2">
-                {/* Edit Button */}
+            rowActions={(row) => (
+              <div className="flex gap-2">
+                {/* Edit */}
                 <Button
-                  variant="tertiary"
+                  variant="refresh"
                   title="Edit"
-                  disabled={selectedRows.length !== 1}
                   onClick={() => {
-                    setEditUserData(selectedRows[0]);
+                    setEditUserData(row);
                     setOpenEdit(true);
                   }}
                 >
-                  <span><Edit className="size-5" /></span>
+                  <Edit className="size-4" />
                 </Button>
 
-                {/* Add Button */}
+                {/* Assign Role */}
                 <Button
-                  variant="tertiary"
-                  title="Add"
-                  onClick={() => setOpenAdd(true)}
-                >
-                  <span><Plus className="size-5" /></span>
-                </Button>
-
-                {/* Delete Button */}
-                <Button
-                  variant="tertiary"
-                  title="Delete"
-                  disabled={selectedRows.length < 1}
+                  variant="safe"
+                  title="Assign Role"
                   onClick={() => {
-                    setIsOpen(true);
-                    setSelectedUsers(selectedRows);
+                    setAssignUserData(row);
+                    setOpenAssignRole(true);
                   }}
                 >
-                  <span><FileX className="size-5" /></span>
+                  <CheckCheck className="size-4" />
                 </Button>
 
-                {/* Refresh Button */}
+                {/* Delete */}
                 <Button
-                  variant="tertiary"
-                  title="Refresh"
-                  onClick={handleGetAllUsers}
+                  variant="danger"
+                  title="Delete"
+                  onClick={() => {
+                    setIsOpen(true);
+                    setSelectedUsers([row]);
+                  }}
                 >
-                  <span><RefreshCcw className="size-5" /></span>
+                  <FileX className="size-4" />
                 </Button>
               </div>
             )}
+            headerActions={
+              <div className="space-x-2">
+                {/* Add */}
+                <Button variant="tertiary" title="Add" onClick={() => setOpenAdd(true)}>
+                  <Plus className="size-5" />
+                </Button>
+
+                {/* Refresh */}
+                <Button variant="tertiary" title="Refresh" onClick={handleGetAllUsers}>
+                  <RefreshCcw className="size-5" />
+                </Button>
+              </div>
+            }
           />
+
+
           {loading && (
             <div className="flex items-center justify-center bg-light">
               <Loader size={48} color="text-primary" />

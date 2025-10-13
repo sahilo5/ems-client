@@ -7,6 +7,7 @@ import Form from "../../components/Form";
 import { useSystemSettings } from "./SystemSettings.hooks";
 import TimeInput from "../../components/TimeInput";
 import { Delete, Edit, FileX, Plus } from "lucide-react";
+import Dropdown from "../../components/Dropdown";
 
 const SystemSettings = () => {
   const {
@@ -26,6 +27,7 @@ const SystemSettings = () => {
     selectedToDelete, setSelectedToDelete,
     holidayDate, setHolidayDate,
     holidayName, setHolidayName,
+    holidayType, setHolidayType,
     errors, setErrors
   } = useSystemSettings();
 
@@ -43,6 +45,7 @@ const SystemSettings = () => {
   const HolidayColumns = [
     { header: "Date", accessor: "date" },
     { header: "Name", accessor: "name" },
+    { header: "Type", accessor: "type" },
   ];
 
   const renderField = (s: any) => {
@@ -221,6 +224,15 @@ const SystemSettings = () => {
         size="small"
       >
         <div className="space-y-4">
+          <Dropdown
+            label="Holiday Type"
+            value={holidayType}
+            onChange={setHolidayType}
+            options={[
+              { label: "Unpaid", value: "UNPAID" },
+              { label: "Paid", value: "PAID" },
+            ]}
+          />
           <Form
             className="mt-4"
             fields={[
@@ -242,6 +254,7 @@ const SystemSettings = () => {
                 error: errors.name,
               },
             ]}
+            
             submitLabel="Save"
             onSubmit={() => {
               const newErrors: typeof errors = {};
@@ -257,9 +270,10 @@ const SystemSettings = () => {
                 handleUpdateHoliday(editingHoliday.index, {
                   date: holidayDate,
                   name: holidayName,
+                  type: holidayType
                 });
               } else {
-                handleAddHoliday({ date: holidayDate, name: holidayName });
+                handleAddHoliday({ date: holidayDate, name: holidayName ,type: holidayType});
               }
 
               setIsHolidayFormOpen(false);

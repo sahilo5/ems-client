@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from "react";
-import { useEffect } from "react";
 
 type Column<T> = {
   header: string;
@@ -12,10 +11,9 @@ type BrowseProps<T> = {
   footerContent?: React.ReactNode;
   title?: string;
   subtitle?: string;
-  headerActions?: React.ReactNode | ((selectedRows: T[]) => React.ReactNode);
-  selectable?: boolean;
+  headerActions?: React.ReactNode; // simplified
+  rowActions?: (row: T) => React.ReactNode; // new
 };
-
 
 function Browse<T extends Record<string, unknown>>({
   columns,
@@ -24,7 +22,7 @@ function Browse<T extends Record<string, unknown>>({
   title,
   subtitle,
   headerActions,
-  selectable,
+  rowActions,
 }: BrowseProps<T>) {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,37 +30,11 @@ function Browse<T extends Record<string, unknown>>({
   const maxVisiblePages = 5;
   const [sortBy, setSortBy] = useState<keyof T | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
-  const [selectedRows, setSelectedRows] = useState<T[]>([]);
 
-  useEffect(() => {
-    // Filter out selected rows that are no longer in the data
-    setSelectedRows((prevSelected) =>
-      prevSelected.filter((row) =>
-        data.some((item) => item === row)
-      )
-    );
-  }, [data]);
-
-  const toggleRowSelection = (row: T) => {
-    setSelectedRows((prev) =>
-      prev.includes(row)
-        ? prev.filter((r) => r !== row)
-        : [...prev, row]
-    );
-  };
-
-  const toggleSelectAll = () => {
-    if (selectedRows.length === paginatedData.length) {
-      setSelectedRows([]);
-    } else {
-      setSelectedRows(paginatedData);
-    }
-  };
-
+  // 🔍 Filter + sort data
   const filteredData = useMemo(() => {
     let filtered = [...data];
 
-    // Global search
     if (search.trim()) {
       filtered = filtered.filter((row) =>
         Object.values(row).some((value) =>
@@ -71,7 +43,6 @@ function Browse<T extends Record<string, unknown>>({
       );
     }
 
-    // Sorting (with 3-state toggle)
     if (sortBy && sortOrder) {
       filtered.sort((a, b) => {
         const aVal = a[sortBy];
@@ -90,9 +61,7 @@ function Browse<T extends Record<string, unknown>>({
     return filtered;
   }, [search, data, sortBy, sortOrder]);
 
-
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredData.slice(startIndex, startIndex + itemsPerPage);
@@ -114,10 +83,11 @@ function Browse<T extends Record<string, unknown>>({
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`px-3 py-1 rounded-md text-sm ${i === currentPage
-            ? "bg-accent text-white"
-            : "bg-white/20 text-gray-800 hover:bg-white/40"
-            }`}
+          className={`px-3 py-1 rounded-md text-sm ${
+            i === currentPage
+              ? "bg-accent text-white"
+              : "bg-white/20 text-gray-800 hover:bg-white/40"
+          }`}
         >
           {i}
         </button>
@@ -125,7 +95,6 @@ function Browse<T extends Record<string, unknown>>({
     }
 
     if (right < totalPages) pages.push(<span key="end-ellipsis">...</span>);
-
     return pages;
   };
 
@@ -133,25 +102,30 @@ function Browse<T extends Record<string, unknown>>({
     <div className="w-full h-auto p-4 overflow-auto bg-white/40 backdrop-blur-sm rounded-lg border border-white/60 shadow-inner shadow-white/20">
       {/* Header */}
       <div className="flex justify-between items-center flex-wrap gap-4 mb-4">
-        {/* Title and subtitle */}
         <div>
           {title && <h2 className="pl-1 text-2xl font-bold text-dark">{title}</h2>}
           {subtitle && <p className="text-sm text-gray-700">{subtitle}</p>}
         </div>
 
-        {/* Right-side: Search and Header Actions */}
         <div className="flex items-center gap-3 flex-wrap justify-end">
+          {/* 🔹 Global buttons like Add / Refresh */}
+          {headerActions}
 
-          {/* Header Actions (button, etc.) */}
-          {typeof headerActions === "function"
-            ? headerActions(selectedRows)
-            : headerActions}
-
-          {/* Search bar */}
+          {/* 🔍 Search bar */}
           <div className="relative w-64">
             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-600">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"
+                />
               </svg>
             </span>
             <input
@@ -165,31 +139,19 @@ function Browse<T extends Record<string, unknown>>({
         </div>
       </div>
 
-
       {/* Table */}
       <div className="w-full overflow-x-auto h-auto rounded-lg">
         <table className="w-full table-auto text-sm border border-accent rounded-lg">
-
           <thead className="backdrop-blur-sm bg-accent/60 text-dark border-accent border-1 shadow-inner shadow-accent/40 rounded-t-lg">
             <tr>
-              {selectable && (
-                <th className=" border border-accent hover:cursor-pointer">
-                  <input
-                    type="checkbox"
-                    onChange={toggleSelectAll}
-                    checked={selectedRows.length === paginatedData.length && paginatedData.length > 0}
-                    className="size-3.5 hover:cursor-pointer"
-                  />
-                </th>
-              )}
               {columns.map((col) => {
                 const isSorted = sortBy === col.accessor;
                 const icon = isSorted
                   ? sortOrder === "asc"
                     ? " ▲"
                     : sortOrder === "desc"
-                      ? " ▼"
-                      : ""
+                    ? " ▼"
+                    : ""
                   : "";
 
                 return (
@@ -215,6 +177,7 @@ function Browse<T extends Record<string, unknown>>({
                   </th>
                 );
               })}
+              {rowActions && <th className="px-6 py-3 text-xs font-semibold">Actions</th>}
             </tr>
           </thead>
 
@@ -223,34 +186,27 @@ function Browse<T extends Record<string, unknown>>({
               paginatedData.map((row, rowIdx) => (
                 <tr
                   key={rowIdx}
-                  onDoubleClick={() => toggleRowSelection(row)}
-                  className={`border border-accent/10 transition-colors duration-200
-          ${rowIdx % 2 === 0 ? "bg-white/80" : "bg-white/60"} hover:bg-white cursor-pointer`}
+                  className={`border border-accent/10 transition-colors duration-200 ${
+                    rowIdx % 2 === 0 ? "bg-white/80" : "bg-white/60"
+                  } hover:bg-white cursor-pointer`}
                 >
-                  {selectable && (
-                    <td className="p-1 border border-accent/10 hover:cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={selectedRows.includes(row)}
-                        onChange={() => toggleRowSelection(row)}
-                        className="size-3.5 hover:cursor-pointer"
-                      />
-                    </td>
-                  )}
                   {columns.map((col, colIdx) => (
-                    <td
-                      key={colIdx}
-                      className="px-4 py-2 text-gray-800"
-                    >
+                    <td key={colIdx} className="px-4 py-2 text-gray-800">
                       {String(row[col.accessor])}
                     </td>
                   ))}
+
+                  {rowActions && (
+                    <td className="px-4 py-2 gap-2">
+                      {rowActions(row)}
+                    </td>
+                  )}
                 </tr>
               ))
             ) : (
               <tr>
                 <td
-                  colSpan={columns.length + (selectable ? 1 : 0)}
+                  colSpan={columns.length + (rowActions ? 1 : 0)}
                   className="text-center p-6 text-red-500"
                 >
                   No data found.
@@ -258,8 +214,6 @@ function Browse<T extends Record<string, unknown>>({
               </tr>
             )}
           </tbody>
-
-
         </table>
       </div>
 

@@ -39,10 +39,10 @@ const MarkAttendance = () => {
   return (
     <div className="w-full backdrop-blur-sm bg-white/40 text-dark shadow-inner shadow-white/50 border-white p-4 rounded-lg border mx-auto">
       {/* Mode Toggle */}
-      <div className="flex gap-1 backdrop-blur-lg bg-white/40 border-1 border-white rounded-full p-1 w-fit mb-3">
+      <div className="flex gap-1 backdrop-blur-lg bg-white/40 border-1 border-white rounded-full p-0.5 w-fit mb-3">
         <button
           onClick={() => setMode("mark")}
-          className={`px-3 py-2 rounded-full transition-all duration-300 ease-in-out ${mode === "mark"
+          className={`px-2 py-1 rounded-full transition-all duration-300 ease-in-out ${mode === "mark"
               ? "backdrop-blur-sm bg-accent/50 text-dark border-accent border-1 shadow-inner shadow-accent/20"
               : "text-gray-700 hover:bg-accent/30"
             }`}
@@ -52,7 +52,7 @@ const MarkAttendance = () => {
 
         <button
           onClick={() => setMode("update")}
-          className={`px-3 py-2 rounded-full transition-all duration-300 ease-in-out ${mode === "update"
+          className={`px-2 py-1 rounded-full transition-all duration-300 ease-in-out ${mode === "update"
               ? "backdrop-blur-sm bg-accent/50 text-dark border-accent border-1 shadow-inner shadow-accent/20"
               : "text-gray-700 hover:bg-accent/30"
             }`}

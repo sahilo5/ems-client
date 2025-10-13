@@ -10,7 +10,7 @@ export type AttendanceDay = {
   checkIn?: string | null;
   checkOut?: string | null;
   totalHours?: number;
-  status: "PRESENT" | "ABSENT" | "HALF_DAY" | "LATE" | "LEAVE";
+  status: "PRESENT" | "ABSENT" | "HALF_DAY" | "LATE" | "LEAVE"| "PAID_LEAVE";
 };
 
 type Summary = {
@@ -64,7 +64,6 @@ export const useAttendanceCalendar = (
   });
 
   const daysInMonth = dayjs(month).daysInMonth();
-  const todayStr = dayjs().format("YYYY-MM-DD");
 
   /** fetch holidays from settings (existing behaviour, kept) */
   const fetchHolidays = async () => {
@@ -84,8 +83,8 @@ export const useAttendanceCalendar = (
           setHolidays([]);
         }
       }
-    } catch (err: any) {
-      showToast(err?.message || "Failed to fetch holidays", "error");
+    } catch (err) {
+      showToast((err as Error)?.message || "Failed to fetch holidays", "error");
     }
   };
 
@@ -126,7 +125,7 @@ export const useAttendanceCalendar = (
             "Content-Type": "application/json",
           },
         });
-      } catch (err) {
+      } catch {
         // ignore, will fallback to username
       }
 
@@ -138,7 +137,7 @@ export const useAttendanceCalendar = (
             "Content-Type": "application/json",
           },
         });
-      } catch (err) {
+      } catch {
         // ignore, join date might be missing
       }
 
@@ -227,8 +226,16 @@ export const useAttendanceCalendar = (
         });
 
         if (response && response.success) {
-          const data: any[] = response.data || [];
-          const normalized: AttendanceDay[] = data.map((d: any) => ({
+          const data: {
+            date: string;
+            checkIn?: string | null;
+            checkInTime?: string | null;
+            checkOut?: string | null;
+            checkOutTime?: string | null;
+            totalHours?: number;
+            status?: "PRESENT" | "ABSENT" | "HALF_DAY" | "LATE" | "LEAVE" |"PAID_LEAVE" ;
+          }[] = response.data || [];
+          const normalized: AttendanceDay[] = data.map((d) => ({
             date: d.date,
             checkIn: d.checkIn ?? d.checkInTime ?? null,
             checkOut: d.checkOut ?? d.checkOutTime ?? null,
@@ -286,10 +293,51 @@ export const useAttendanceCalendar = (
             }
           });
 
+          const leaveDateStrings = normalized
+            .filter((d) => d.status === "LEAVE")
+            .map((d) => d.date)
+            .sort();
+
+          const leaveDates = leaveDateStrings.map((d) => dayjs(d));
+
+          const leavePeriods: { start: dayjs.Dayjs; end: dayjs.Dayjs }[] = [];
+          if (leaveDates.length > 0) {
+            let periodStart = leaveDates[0];
+            let lastDateInPeriod = leaveDates[0];
+
+            for (let i = 1; i < leaveDates.length; i++) {
+              const currentDate = leaveDates[i];
+              const diff = currentDate.diff(lastDateInPeriod, "day");
+
+              if (diff <= 3) {
+                lastDateInPeriod = currentDate;
+              } else {
+                leavePeriods.push({ start: periodStart, end: lastDateInPeriod });
+                periodStart = currentDate;
+                lastDateInPeriod = currentDate;
+              }
+            }
+            leavePeriods.push({ start: periodStart, end: lastDateInPeriod });
+          }
+
           const workingDays = daysArray.filter((d) => {
-            const isSunday = dayjs(d).day() === 0;
+            const day = dayjs(d);
             const isHoliday = holidays.some((h) => h.date === d);
-            return !isSunday && !isHoliday;
+            if (isHoliday) {
+              return false;
+            }
+
+            const isSunday = day.day() === 0;
+            if (isSunday) {
+              const isDuringLeave = leavePeriods.some(
+                (period) =>
+                  !day.isBefore(period.start, "day") &&
+                  !day.isAfter(period.end, "day")
+              );
+              return !isDuringLeave;
+            }
+
+            return true;
           }).length;
 
           setSummary({

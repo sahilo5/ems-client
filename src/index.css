@@ -7,6 +7,10 @@
   --color-light: #f8f8f8;
   --color-dark: #45383F;
   --color-mid-gray: #434242;
+  --color-edit: #ff8c62;
+  --color-add: #63ff82;
+  --color-delete: #f16161;
+  --color-refresh: #7080fb;
 
   /* Subtle gradient colors inspired by dashboard look */
   --gradient-from: #fb5f5f;  

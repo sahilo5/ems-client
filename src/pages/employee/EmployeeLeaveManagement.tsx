@@ -9,6 +9,7 @@ import Dropdown from "../../components/Dropdown";
 import DateSelector from "../../components/DateSelector";
 import Form from "../../components/Form";
 import Popup from "../../components/Popup";
+import { useToast } from "../../components/ToastProvider";
 
 const EmployeeLeaveManagement = () => {
   const {
@@ -34,13 +35,14 @@ const EmployeeLeaveManagement = () => {
   const [reason, setReason] = useState("");
   const [dates, setDates] = useState<string[]>([]);
   const [description, setDescription] = useState("");
+const { showToast } = useToast();
 
   // Apply leave with validation
   const handleApply = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!type || !reason || !dates.length || !description) {
-      alert("All fields are required!");
+      showToast("All fields are required!!","error");
       return;
     }
 
@@ -79,54 +81,57 @@ const EmployeeLeaveManagement = () => {
         title="My Leaves"
         data={leaves}
         columns={LeaveColumnHeaders}
-        selectable={true}
-        headerActions={(selectedRows) => (
+        headerActions={
           <div className="space-x-2">
+            {/* Add New */}
+            <Button variant="tertiary" title="Apply Leave" onClick={() => setOpenApply(true)}>
+              <Plus className="size-5" />
+            </Button>
+
+            {/* Refresh */}
+            <Button variant="tertiary" title="Refresh" onClick={handleGetMyLeaves}>
+              <RefreshCcw className="size-5" />
+            </Button>
+          </div>
+        }
+        rowActions={(row) => (
+          <>
             {/* Edit Button */}
             <Button
-              variant="tertiary"
+              variant="refresh"
               title="Edit"
-              disabled={selectedRows.length !== 1 || selectedRows[0].status !== "PENDING"}
+              disabled={row.status !== "PENDING"}
               onClick={() => {
-                setSelectedLeave(selectedRows[0]);
-                setType(selectedRows[0].type);
-                setReason(selectedRows[0].reason);
-                setDates(selectedRows[0].dates);
-                setDescription(selectedRows[0].description);
+                setSelectedLeave(row);
+                setType(row.type);
+                setReason(row.reason);
+                setDates(row.dates);
+                setDescription(row.description);
                 setOpenEdit(true);
               }}
             >
-              <span><Edit className="size-5" /></span>
-            </Button>
-
-            {/* Apply Button */}
-            <Button variant="tertiary" title="Apply Leave" onClick={() => setOpenApply(true)}>
-              <span><Plus className="size-5" /></span>
+              <Edit className="size-4" />
             </Button>
 
             {/* Delete Button */}
             <Button
-              variant="tertiary"
+              variant="danger"
               title="Delete"
-              disabled={selectedRows.length < 1 || selectedRows.some((row) => row.status !== "PENDING")}
+              disabled={row.status !== "PENDING"}
               onClick={() => {
                 setIsOpen(true);
-                setSelectedLeave(selectedRows[0]);
+                setSelectedLeave(row);
               }}
             >
-              <span><FileX className="size-5" /></span>
+              <FileX className="size-4" />
             </Button>
-
-            {/* Refresh Button */}
-            <Button variant="tertiary" title="Refresh" onClick={handleGetMyLeaves}>
-              <span><RefreshCcw className="size-5" /></span>
-            </Button>
-          </div>
+          </>
         )}
       />
 
+
       {loading && (
-        <div className="flex items-center justify-center bg-light">
+        <div className="flex items-center justify-center bg-none">
           <Loader size={48} color="text-primary" />
         </div>
       )}
@@ -139,15 +144,14 @@ const EmployeeLeaveManagement = () => {
             value={type}
             onChange={setType}
             options={[
-              { label: "Sick", value: "SICK" },
-              { label: "Casual", value: "CASUAL" },
+              { label: "Unpaid", value: "UNPAID" },
               { label: "Paid", value: "PAID" },
             ]}
           />
 
           <Form
             fields={[
-              { type: "text", name: "reason", label: "Reason", value: reason, onChange: setReason },
+              { type: "text", name: "reason", placeholder:"Reason", label: "Reason", value: reason, onChange: setReason },
             ]}
           />
 
@@ -155,7 +159,7 @@ const EmployeeLeaveManagement = () => {
 
           <Form
             fields={[
-              { type: "text", name: "description", label: "Description", value: description, onChange: setDescription },
+              { type: "text", name: "description",placeholder:"Description",  label: "Description", value: description, onChange: setDescription },
             ]}
           />
 
@@ -173,8 +177,7 @@ const EmployeeLeaveManagement = () => {
             value={type}
             onChange={setType}
             options={[
-              { label: "Sick", value: "SICK" },
-              { label: "Casual", value: "CASUAL" },
+              { label: "Unpaid", value: "UNPAID" },
               { label: "Paid", value: "PAID" },
             ]}
           />
