@@ -17,7 +17,7 @@ type BrowseProps<T> = {
 };
 
 
-function Browse<T extends Record<string, any>>({
+function Browse<T extends Record<string, unknown>>({
   columns,
   data,
   footerContent,
@@ -116,7 +116,7 @@ function Browse<T extends Record<string, any>>({
           onClick={() => handlePageChange(i)}
           className={`px-3 py-1 rounded-md text-sm ${i === currentPage
             ? "bg-accent text-white"
-            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            : "bg-white/20 text-gray-800 hover:bg-white/40"
             }`}
         >
           {i}
@@ -130,13 +130,13 @@ function Browse<T extends Record<string, any>>({
   };
 
   return (
-    <div className="w-full h-auto p-4 overflow-auto bg-gray-200">
+    <div className="w-full h-auto p-4 overflow-auto bg-white/40 backdrop-blur-sm rounded-lg border border-white/60 shadow-inner shadow-white/20">
       {/* Header */}
       <div className="flex justify-between items-center flex-wrap gap-4 mb-4">
         {/* Title and subtitle */}
         <div>
-          {title && <h2 className="pl-1 text-2xl font-bold text-gray-600">{title}</h2>}
-          {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
+          {title && <h2 className="pl-1 text-2xl font-bold text-dark">{title}</h2>}
+          {subtitle && <p className="text-sm text-gray-700">{subtitle}</p>}
         </div>
 
         {/* Right-side: Search and Header Actions */}
@@ -159,7 +159,7 @@ function Browse<T extends Record<string, any>>({
               placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-accent text-sm placeholder-gray-400 font-semibold text-dark"
+              className="w-full pl-10 pr-4 py-2 border border-accent rounded bg-white/20 focus:outline-none focus:ring-2 focus:ring-accent text-sm placeholder-gray-400 font-semibold text-dark"
             />
           </div>
         </div>
@@ -167,13 +167,13 @@ function Browse<T extends Record<string, any>>({
 
 
       {/* Table */}
-      <div className="w-full overflow-x-auto h-auto">
-        <table className="w-full table-auto text-sm border border-gray-200 rounded-lg">
+      <div className="w-full overflow-x-auto h-auto rounded-lg">
+        <table className="w-full table-auto text-sm border border-accent rounded-lg">
 
-          <thead className="bg-accent text-white">
+          <thead className="backdrop-blur-sm bg-accent/60 text-dark border-accent border-1 shadow-inner shadow-accent/40 rounded-t-lg">
             <tr>
               {selectable && (
-                <th className=" border border-gray-300 hover:cursor-pointer">
+                <th className=" border border-accent hover:cursor-pointer">
                   <input
                     type="checkbox"
                     onChange={toggleSelectAll}
@@ -208,7 +208,7 @@ function Browse<T extends Record<string, any>>({
                         setSortOrder("asc");
                       }
                     }}
-                    className="px-6 py-3 cursor-pointer select-none font-semibold border border-gray-300 uppercase text-xs tracking-wider"
+                    className="px-6 py-3 cursor-pointer select-none font-semibold uppercase text-xs tracking-wider"
                   >
                     {col.header}
                     <span className="ml-1">{icon}</span>
@@ -224,11 +224,11 @@ function Browse<T extends Record<string, any>>({
                 <tr
                   key={rowIdx}
                   onDoubleClick={() => toggleRowSelection(row)}
-                  className={`border border-gray-200 transition-colors duration-200
-          ${rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"} hover:bg-gray-300 cursor-pointer`}
+                  className={`border border-accent/10 transition-colors duration-200
+          ${rowIdx % 2 === 0 ? "bg-white/80" : "bg-white/60"} hover:bg-white cursor-pointer`}
                 >
                   {selectable && (
-                    <td className="p-1 border border-gray-200 hover:cursor-pointer">
+                    <td className="p-1 border border-accent/10 hover:cursor-pointer">
                       <input
                         type="checkbox"
                         checked={selectedRows.includes(row)}
@@ -240,7 +240,7 @@ function Browse<T extends Record<string, any>>({
                   {columns.map((col, colIdx) => (
                     <td
                       key={colIdx}
-                      className="px-4 py-2 text-gray-800 border border-gray-200"
+                      className="px-4 py-2 text-gray-800"
                     >
                       {String(row[col.accessor])}
                     </td>
@@ -264,7 +264,7 @@ function Browse<T extends Record<string, any>>({
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-between items-center mt-4 text-sm text-gray-600">
+      <div className="flex justify-between items-center mt-4 text-sm text-gray-700">
         <p>
           Showing {paginatedData.length} of {filteredData.length} entries
         </p>
@@ -272,7 +272,7 @@ function Browse<T extends Record<string, any>>({
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+            className="px-2 py-1 bg-white/20 rounded hover:bg-white/40 disabled:opacity-50"
           >
             Prev
           </button>
@@ -280,7 +280,7 @@ function Browse<T extends Record<string, any>>({
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+            className="px-2 py-1 bg-white/20 rounded hover:bg-white/40 disabled:opacity-50"
           >
             Next
           </button>

@@ -34,7 +34,7 @@ const DateSelector: React.FC<DateSelectorProps> = ({ label, value, onChange }) =
           type="date"
           value={inputDate}
           onChange={(e) => setInputDate(e.target.value)}
-          className="border border-secondary rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          className="border border-white bg-white/30 backdrop-blur-sm rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/10"
         />
         <button
           type="button"

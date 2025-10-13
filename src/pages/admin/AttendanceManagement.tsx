@@ -18,7 +18,7 @@ const AttendanceManagement = () => {
           <div className="flex flex-col space-y-4">
           <ShowQrCode/>
             {loading && (
-              <div className="flex items-center justify-center bg-light">
+              <div className="flex items-center justify-center bg-light/10">
                 <Loader size={48} color="text-primary" />
               </div>
             )}
@@ -31,7 +31,7 @@ const AttendanceManagement = () => {
             <MarkAttendance/>
             
             {loading && (
-              <div className="flex items-center justify-center bg-light">
+              <div className="flex items-center justify-center bg-light/10">
                 <Loader size={48} color="text-primary" />
               </div>
             )}

@@ -4,7 +4,6 @@ import Button from "../../components/Button";
 import Dropdown from "../../components/Dropdown";
 import { useMarkAttendance } from "./MarkAttendance.hooks";
 import AttendanceCalendar from "./AttendanceSummary";
-import { useAttendanceCalendar } from "./AttendanceSummary.hooks";
 import TimeInput from "../../components/TimeInput";
 
 const MarkAttendance = () => {
@@ -38,14 +37,14 @@ const MarkAttendance = () => {
   };
 
   return (
-    <div className="w-full bg-gray-200 shadow-lg p-4 rounded-2xl border border-gray-200 mx-auto">
+    <div className="w-full backdrop-blur-sm bg-white/40 text-dark shadow-inner shadow-white/50 border-white p-4 rounded-lg border mx-auto">
       {/* Mode Toggle */}
-      <div className="flex gap-1 bg-white rounded-full p-1 w-fit mb-3">
+      <div className="flex gap-1 backdrop-blur-lg bg-white/40 border-1 border-white rounded-full p-1 w-fit mb-3">
         <button
           onClick={() => setMode("mark")}
-          className={`px-4 py-2 rounded-full transition-all duration-300 ease-in-out ${mode === "mark"
-              ? "bg-accent text-white shadow-md"
-              : "text-gray-700 hover:bg-gray-200"
+          className={`px-3 py-2 rounded-full transition-all duration-300 ease-in-out ${mode === "mark"
+              ? "backdrop-blur-sm bg-accent/50 text-dark border-accent border-1 shadow-inner shadow-accent/20"
+              : "text-gray-700 hover:bg-accent/30"
             }`}
         >
           Mark Attendance
@@ -53,9 +52,9 @@ const MarkAttendance = () => {
 
         <button
           onClick={() => setMode("update")}
-          className={`px-4 py-2 rounded-full transition-all duration-300 ease-in-out ${mode === "update"
-              ? "bg-accent text-white shadow-md"
-              : "text-gray-700 hover:bg-gray-200"
+          className={`px-3 py-2 rounded-full transition-all duration-300 ease-in-out ${mode === "update"
+              ? "backdrop-blur-sm bg-accent/50 text-dark border-accent border-1 shadow-inner shadow-accent/20"
+              : "text-gray-700 hover:bg-accent/30"
             }`}
         >
           Update Attendance

@@ -1,39 +1,65 @@
 @import "tailwindcss";
 
-@theme{
-  --color-primary: #37465a;
+@theme {
+  --color-primary: #296878;
   --color-secondary: #223040;
   --color-accent: #504042;
   --color-light: #f8f8f8;
   --color-dark: #45383F;
-  --gradient-from: #e6f3e7;
-  --gradient-to: #095f9e;
+  --color-mid-gray: #434242;
+
+  /* Subtle gradient colors inspired by dashboard look */
+  --gradient-from: #fb5f5f;  
+  --gradient-mid: #487cffcf;   
+  --gradient-to: #7e58fc;    
 }
 
-/* Ensure full-page layout */
+/* Page reset */
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--color-light);
 }
 
-/* Full height root with cross-diagonal animated gradient */
+/* Root container with elegant animated gradient */
 #root {
   width: 100%;
-  height: 100vh; /* Force it to fill the entire viewport height */
-  margin: 0 auto;
+  height: 100vh;
   display: flex;
-  flex-direction: column; /* In case you have header/footer stacking */
   align-items: center;
   justify-content: center;
   text-align: center;
-  background-image: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));
-  background-size: 200% 200%;
-  animation: gradientShift 10s ease infinite;
+
+  /* Narrow-band, layered gradient */
+  /* background: radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(255, 255, 255, 0.3) 20%,
+      transparent 70%
+    ),
+    linear-gradient(
+      135deg,
+      var(--gradient-from) 0%,
+      var(--gradient-mid) 25%,
+      var(--gradient-to) 50%,
+      var(--gradient-mid) 75%,
+      var(--gradient-from) 100%
+    ); */
+
+  /* background-size: 250% 250%;  */
+
+  /* Background image setup */
+  background-image: url('./assets/bg6.jpg'); /* <-- replace with your actual image path */
+  background-size: cover;       /* Makes it cover the whole area */
+  background-position: center;  /* Centers the image */
+  background-repeat: no-repeat; /* Prevents tiling */
+  background-attachment: fixed; /* Keeps it fixed on scroll (optional) */
+  animation: gradientShift 35s ease-in-out infinite;
 }
 
-/* Optional animated gradient for smooth visual effect */
+/* Smooth gradient motion */
 @keyframes gradientShift {
   0% {
     background-position: 0% 50%;

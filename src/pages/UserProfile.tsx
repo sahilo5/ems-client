@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useUserProfile } from "./UserProfile.hooks";
 import { AuthContext } from "../context/AuthContext";
-import { ProportionsIcon, UserCircle, UserCircle2 } from "lucide-react";
+import {  UserCircle } from "lucide-react";
 import MiniWindow from "../components/MiniWindow";
 import EditUser from "./admin/EditUser";
 import Button from "../components/Button";
@@ -21,7 +21,7 @@ const UserProfile = () => {
   if (!profile) return <div className="text-center py-10">No user found</div>;
 
   return (
-    <div className="max-w-sm mx-auto bg-white rounded-lg shadow-lg p-6 text-center mt-2">
+    <div className="max-w-sm mx-auto backdrop-blur-sm bg-white/65 text-dark border-white border-1 rounded-lg shadow-lg p-6 text-center mt-2">
 
       {/* Avatar */}
       <div className="flex justify-center mb-4">

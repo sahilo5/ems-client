@@ -31,11 +31,11 @@ const MiniWindow: React.FC<MiniWindowProps> = ({
 
   return ReactDOM.createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30"
+      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 "
       onClick={onClose}
     >
       <div
-        className={`relative bg-white p-6 rounded-xl shadow-lg overflow-y-auto ${sizeStyles[size]}`}
+        className={`relative backdrop-blur-sm bg-white/65 text-dark shadow-inner shadow-white/50 border-white border-1 p-6 rounded-xl overflow-y-auto ${sizeStyles[size]}`}
         onClick={(e) => e.stopPropagation()}
       >
         <button

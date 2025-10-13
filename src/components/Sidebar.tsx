@@ -76,20 +76,17 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div
-      className={`${collapsed ? "w-15" : "w-50"
-        } h-full bg-primary text-white shadow-lg flex flex-col transition-all duration-300`}
+      className={`${collapsed ? "w-15" : "w-40"
+        } h-full backdrop-blur-lg bg-white/30 text-dark flex flex-col transition-all duration-300`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-light">
+      <div className="flex items-center justify-between p-3 border-b border-none">
         <button
           onClick={() => setCollapsed((prev) => !prev)}
-          className="p-1 hover:bg-gray-200 rounded-md group"
+          className="p-1.5 text-mid-gray hover:bg-white/30 hover:text-dark hover:shadow-md rounded-xl group"
         >
-          <Menu className="w-6 h-6 text-light group-hover:text-dark" />
+          <Menu className="w-6 h-6 text-mid-gray group-hover:text-dark" />
         </button>
-        {!collapsed && (
-          <div className="text-xl font-bold whitespace-nowrap">EMS</div>
-        )}
       </div>
 
       {/* Navigation */}
@@ -102,9 +99,18 @@ const Sidebar: React.FC<SidebarProps> = ({
               if (typeof item.onClick === "function") item.onClick();
             }}
             className={({ isActive }) =>
-              `flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium hover:bg-secondary transition ${isActive ? "bg-secondary text-white" : "text-light"
-              }`
-            }
+        `group flex items-center gap-3 rounded-xl text-[15px] font-medium 
+         transition-all duration-300 ease-in-out
+        ${collapsed
+          ?"px-3 py-2.5"
+          :"px-4 py-2.5"
+        }
+         ${
+           isActive
+             ? "bg-white/20 text-dark shadow-md border border-white/50 "
+             : " text-mid-gray hover:bg-white/30 hover:text-dark hover:shadow-md"
+         }`
+      }
           >
 
             {item.icon}
@@ -114,19 +120,20 @@ const Sidebar: React.FC<SidebarProps> = ({
       </nav>
 
       {/* Logout Button */}
-      <div className="p-2 border-t border-light">
+      <div className="p-2">
         <button
           onClick={() => setIsOpen(true)}
-          className="w-full flex items-center space-x-2 p-2 hover:bg-gray-200 rounded-md group text-sm"
+          className="w-full flex items-center space-x-2 p-2 text-dark hover:bg-white/30 hover:text-dark hover:shadow-md rounded-xl group text-sm"
         >
-          <LogOut className="w-4 h-4 text-light group-hover:text-dark" />
+          <LogOut className="w-4 h-4 group-hover:text-dark" />
           {!collapsed && (
-            <span className="text-light group-hover:text-dark">
+            <span className="group-hover:text-dark">
               {logoutLabel}
             </span>
           )}
         </button>
 
+      </div>
         <Popup
           title="Confirm"
           content="Are you sure you want to logout. This action cannot be undone."
@@ -136,7 +143,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           onCancel={handleCancel}
           variant="confirm"
         />
-      </div>
     </div>
   );
 };

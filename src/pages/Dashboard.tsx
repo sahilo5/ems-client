@@ -9,7 +9,7 @@ const Dashboard: React.FC = () => {
   const { role, username } = useContext(AuthContext);
 
   return (
-    <div className="p-6">
+    <div className="p-2">
       {role === "ADMIN" && <AdminDashboard />}
       {role === "EMPLOYEE" && <EmployeeDashboard username={username!} />}
       {role === "USER" && <UserDashboard />}

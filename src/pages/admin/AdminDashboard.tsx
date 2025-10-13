@@ -1,4 +1,4 @@
-import { CalendarCheck, DollarSign, Users } from "lucide-react";
+import { CalendarCheck, Users } from "lucide-react";
 import Loader from "../../components/Loader";
 import React from "react";
 import { useAdminDashboard } from "./AdminDashboard.hooks";
@@ -13,7 +13,7 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 bg-light">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-mid-gray hover:text-dark ">
         <Card title="Total Employees" value={data?.totalEmployees ?? "-"} icon={<Users />} />
         <Card title="Total Users" value={data?.totalUsers ?? "-"} icon={<Users />} />
         <Card title="Attendance Today" value={data?.todayAttendance ?? "-"} icon={<CalendarCheck />} />
@@ -21,7 +21,7 @@ const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Attendance Analytics */}
-      <div className="bg-white p-4 rounded-xl shadow">
+      <div className="backdrop-blur-lg bg-white/40 border border-white p-4 rounded-xl shadow">
         <h2 className="text-lg font-semibold mb-4">Attendance Analytics</h2>
         <AttendanceChart data={data?.attendanceSummary ?? []} />
       </div>

@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 type PopupProps = {
@@ -35,29 +36,25 @@ const Popup: React.FC<PopupProps> = ({
           button: "bg-red-600 hover:bg-red-700 text-white",
         };
       case "notify":
-        return {
-          bg: "bg-[color:var(--color-light)]",
-          title: "text-[color:var(--color-primary)]",
-          button: "bg-[color:var(--color-primary)] hover:bg-[color:var(--color-dark)] text-white",
-        };
       default:
         return {
           bg: "bg-[color:var(--color-light)]",
           title: "text-[color:var(--color-primary)]",
-          button: "bg-[color:var(--color-primary)] hover:bg-[color:var(--color-dark)] text-white",
+          button:
+            "bg-primary/50 border shadow-sm border-primary backdrop-blur-sm text-dark hover:bg-primary/40 text-Black cursor-pointer hover:shadow-lg hover:border-2 font-bold",
         };
     }
   };
 
   const variantClasses = getVariantColors();
 
-  return (
+  const popupContent = (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
       <div
-        className={`w-[90%] max-w-md rounded-2xl shadow-xl p-6 ${variantClasses.bg} transition`}
+        className={`w-[90%] max-w-md rounded-2xl backdrop-blur-sm bg-white/75 text-dark shadow-inner shadow-white/50 border-white border-1 p-6 ${variantClasses.bg} transition`}
       >
         {/* Header */}
-        <div className="flex justify-between items-start mb-4">
+        <div className="flex justify-between items-start mb-4 ">
           <h2 className={`text-lg font-semibold ${variantClasses.title}`}>
             {title}
           </h2>
@@ -74,7 +71,7 @@ const Popup: React.FC<PopupProps> = ({
           {onCancel && (
             <button
               onClick={onCancel}
-              className="px-4 py-2 text-sm rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800"
+              className="px-4 py-2 bg-none border rounded-md shadow-sm bg-white/10 border-white backdrop-blur-sm text-black hover:bg-white/40 text-Black cursor-pointer hover:shadow-lg hover:border-2"
             >
               {cancelLabel}
             </button>
@@ -91,6 +88,9 @@ const Popup: React.FC<PopupProps> = ({
       </div>
     </div>
   );
+
+  // ✅ Render popup outside sidebar
+  return createPortal(popupContent, document.body);
 };
 
 export default Popup;

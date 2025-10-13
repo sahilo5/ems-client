@@ -4,10 +4,10 @@ type ButtonProps = {
   children: React.ReactNode;
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
-  variant?: "primary" | "secondary" | "danger" | "tertiary";
+  variant?: "primary" | "secondary" | "danger" | "tertiary"| "safe";
   disabled?: boolean;
   className?: string;
-  title?: string; // ✅ Add this line
+  title?: string;  
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -23,19 +23,22 @@ const Button: React.FC<ButtonProps> = ({
 
   switch (variant) {
     case "primary":
-      variantClass = "bg-primary hover:opacity-90 text-white cursor-pointer";
+      variantClass = "bg-primary/50 border shadow-sm border-primary backdrop-blur-sm text-dark hover:bg-primary/40 text-Black cursor-pointer hover:shadow-lg hover:border-2 font-bold";
       break;
     case "secondary":
-      variantClass = "bg-light text-dark border border-secondary hover:bg-gray-200 cursor-pointer";
+      variantClass = "bg-white/50 border shadow-sm border-white backdrop-blur-sm text-dark hover:bg-white/40 text-Black cursor-pointer hover:shadow-lg hover:border-2 font-bold";
       break;
     case "tertiary":
-      variantClass = "bg-accent hover:opacity-90 cursor-pointer text-white";
+      variantClass = "bg-accent/50 border shadow-sm border-accent backdrop-blur-sm text-dark hover:bg-accent/40 text-Black cursor-pointer hover:shadow-lg hover:border-2 font-bold";
       break;
     case "danger":
-      variantClass = "bg-red-600 hover:bg-red-700 cursor-pointer text-white";
+      variantClass = "bg-red/50 border shadow-sm border-red backdrop-blur-sm text-dark hover:bg-red/40 text-Black cursor-pointer hover:shadow-lg hover:border-2 font-bold";
+      break;
+    case "safe":
+      variantClass = "bg-green/50 border shadow-sm border-green backdrop-blur-sm text-dark hover:bg-green/40 text-Black cursor-pointer hover:shadow-lg hover:border-2 font-bold";
       break;
     default:
-      variantClass = "bg-primary hover:opacity-90 cursor-pointer text-white";
+      variantClass = "bg-primary/50 border shadow-sm border-primary backdrop-blur-sm text-dark hover:bg-primary/40 text-Black cursor-pointer hover:shadow-lg hover:border-2 font-bold";
   }
 
   const disabledClass = disabled ? "opacity-50 cursor-not-allowed" : "";

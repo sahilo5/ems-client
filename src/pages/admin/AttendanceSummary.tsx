@@ -24,7 +24,7 @@ const statusColors: Record<string, string> = {
   LATE: "bg-yellow-300",
   LEAVE: "bg-orange-600",
   HOLIDAY: "bg-gray-100",
-  UNMARKED: "bg-gray-300", // pre-join or future
+  UNMARKED: "bg-gray-300", 
 };
 
 const AttendanceCalendar: React.FC<Props> = ({ username, initialMonth, refreshKey }) => {
@@ -180,9 +180,9 @@ const buildYearlyRows = () => {
   
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 mt-10 bg-white border rounded-lg border-white">
+    <div className="flex flex-col md:flex-row gap-6 mt-10 backdrop-blur-lg bg-white/30 border rounded-lg border-white">
       {/* LEFT: Calendar */}
-      <div className="w-full md:w-2/3 border-2 rounded-lg p-4 border-accent">
+      <div className="w-full md:w-2/3 border-1 rounded-lg p-4 border-white">
         <div className="flex items-center justify-between mb-3">
           <input
             aria-label="Select month and year"
@@ -210,7 +210,7 @@ const buildYearlyRows = () => {
         <div className="mt-2 overflow-x-auto">
           <div className="grid grid-cols-7 gap-2" style={{ minWidth: 7 * 84 }}>
             {Array.from({ length: firstDayIndex }).map((_, i) => (
-              <div key={`empty-${i}`} className="h-20 rounded-lg border bg-white" />
+              <div key={`empty-${i}`} className="h-20 rounded-lg border bg-white/50" />
             ))}
 
             {Array.from({ length: daysInMonth }, (_, i) => {
@@ -229,7 +229,7 @@ const buildYearlyRows = () => {
               else if (record) status = record.status;
               else status = "ABSENT";
 
-              const colorClass = statusColors[status] ?? "bg-white";
+              const colorClass = statusColors[status] ?? "bg-white/50";
               const tooltip = record
                 ? `Check-In: ${record.checkIn ?? "-"} | Check-Out: ${record.checkOut ?? "-"
                 } | Hours: ${record.totalHours ?? 0}`
@@ -258,7 +258,7 @@ const buildYearlyRows = () => {
       </div>
 
       {/* RIGHT: Summary */}
-      <div className="w-full md:w-1/3 border-2 rounded-lg p-4 bg-white shadow-sm border-accent">
+      <div className="w-full md:w-1/3  rounded-lg p-4  ">
         <h4 className="text-lg font-semibold mb-2">{employeeFullName}</h4>
         {loading ? (
           <div className="flex items-center justify-center bg-light">
@@ -276,23 +276,23 @@ const buildYearlyRows = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-sm">
-              <div className="p-2 rounded bg-green-50">
+              <div className="p-2 rounded bg-green-50 border-1 border-green-200 shadow-md hover:bg-green-100">
                 <div className="font-semibold">Present</div>
                 <div>{summary.presents}</div>
               </div>
-              <div className="p-2 rounded bg-red-50">
+              <div className="p-2 rounded bg-red-50 border-1 border-red-200 shadow-sm hover:bg-red-100">
                 <div className="font-semibold">Absent</div>
                 <div>{summary.absents}</div>
               </div>
-              <div className="p-2 rounded bg-yellow-50">
+              <div className="p-2 rounded bg-yellow-50 border-1 border-yellow-200 shadow-sm hover:bg-yellow-100">
                 <div className="font-semibold">Late</div>
                 <div>{summary.lates}</div>
               </div>
-              <div className="p-2 rounded bg-orange-50">
+              <div className="p-2 rounded bg-orange-50 border-1 border-orange-200 shadow-sm hover:bg-orange-100">
                 <div className="font-semibold">Half Days</div>
                 <div>{summary.halfDays}</div>
               </div>
-              <div className="p-2 rounded bg-orange-100 col-span-2">
+              <div className="p-2 rounded bg-red-100 col-span-2 border-1 border-red-300 shadow-sm hover:bg-red-200">
                 <div className="font-semibold">Leaves</div>
                 <div>{summary.leaves}</div>
               </div>

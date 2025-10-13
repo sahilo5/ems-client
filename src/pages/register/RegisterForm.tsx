@@ -2,7 +2,6 @@ import React from "react";
 import Form from "../../components/Form";
 import { useRegisterForm } from "./RegisterForm.hooks";
 import Button from "../../components/Button";
-import Input from "../../components/Input"; // import for direct use
 
 const RegisterForm = () => {
   const {
@@ -28,7 +27,7 @@ const RegisterForm = () => {
   } = useRegisterForm();
 
   return (
-    <div className="max-w-md w-full bg-light shadow-lg p-6 rounded-2xl border border-light">
+    <div className="max-w-md w-full backdrop-blur-lg bg-white/30 text-dark shadow-inner shadow-white/20 p-6 rounded-2xl border border-light">
       <h2 className="text-2xl font-bold text-center mb-6 text-dark">Register</h2>
 
       {/* Rest of the Form */}

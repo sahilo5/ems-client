@@ -29,13 +29,14 @@ const Dropdown: React.FC<DropdownProps> = ({
 
       <div className="relative">
         <select
+          id=''
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
           className={`
             appearance-none w-full
-            px-3 py-2 pr-10 text-sm rounded-md border border-secondary bg-white text-dark
-            focus:outline-none focus:ring-2 focus:ring-primary
+            px-3 py-2 pr-10 text-sm rounded-md border border-white bg-white/30 text-dark shadow backdrop-blur-sm
+            focus:outline-none focus:ring-2 focus:ring-black/10
             disabled:opacity-50 disabled:cursor-not-allowed
             transition-all
           `}

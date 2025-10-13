@@ -34,16 +34,11 @@ export const Tabs: React.FC<TabsProps> = ({ defaultIndex = 0, children }) => {
 
   const validChildren = Children.toArray(children).filter(isValidElement) as ReactElement<TabProps>[];
 
-  const labels = validChildren.map((child) => ({
-    index: child.props.index,
-    label: child.props.label,
-  }));
-
   return (
     <TabsContext.Provider value={{ activeIndex, setActiveIndex }}>
-      <div className="w-full">
+      <div className="w-aut">
         {/* Tab Buttons */}
-        <div className="flex space-x-2 border-b border-gray-200 mb-1 sticky top-0 bg-white z-10">
+        <div className="flex space-x-2 mb-2 sticky top-0 rounded-md z-10">
           {validChildren.map((child) => {
             const { index, label, onClick } = child.props;
 
@@ -54,9 +49,9 @@ export const Tabs: React.FC<TabsProps> = ({ defaultIndex = 0, children }) => {
                   setActiveIndex(index);
                   if (typeof onClick === "function") onClick(); 
                 }}
-                className={`px-4 py-2 text-sm font-medium rounded-t-md transition-all duration-200 ${activeIndex === index
-                    ? "bg-gray-200 text-accent border-b-2 border-accent"
-                    : "text-accent hover:text-accent-500 hover:bg-gray-200"
+                className={`px-4 py-2 text-sm backdrop-blur-lg bg-white/20 font-medium text-accent rounded-md shadow-2xl transition-all duration-200 ${activeIndex === index
+                    ? "bg-white/40  border-1 shadow-md  border-white"
+                    : " bg-white/15 hover:text-accent-500 hover:bg-white/30 shadow-md"
                   }`}
               >
                 {label}

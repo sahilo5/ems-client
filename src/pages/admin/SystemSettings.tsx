@@ -110,7 +110,7 @@ const SystemSettings = () => {
 
 
   return (
-    <div className="relative p-6 rounded-2xl shadow-lg bg-gray-200 space-y-8">
+    <div className="relative p-6 rounded-lg backdrop:blur-md bg-white/40 border-white border-1 shadow-inner shadow-white/30 space-y-8">
       {["general", "attendance", "email", "sms", "security"].map((cat) => (
         <section key={cat}>
           <h2 className="text-xl font-bold mb-4 text-primary capitalize">
@@ -147,7 +147,7 @@ const SystemSettings = () => {
 
       {/* Floating Save Button */}
       {dirty && (
-        <div className="fixed bottom-6 right-6">
+        <div className="fixed bottom-6 right-10">
           <Button variant="primary" onClick={saveAll}>
             Save Changes
           </Button>

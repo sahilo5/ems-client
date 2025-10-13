@@ -21,7 +21,7 @@ const LoginForm = () => {
 
 
   return (
-    <div className="max-w-md w-full bg-light shadow-lg p-8 rounded-2xl border border-light">
+    <div className="max-w-md w-full backdrop-blur-lg bg-white/30 text-dark shadow-inner shadow-white/20 p-8 rounded-2xl border border-light">
       <h2 className="text-2xl font-bold text-center mb-6 text-dark">Login</h2>
       <form
         onSubmit={(e) => {

@@ -11,7 +11,7 @@ type CardProps = {
 const Card: React.FC<CardProps> = ({ title, value, icon, footer, className = "" }) => {
   return (
     <div
-      className={`bg-white shadow rounded-lg p-4 border border-light text-dark ${className}`}
+      className={`backdrop-blur-lg bg-white/40 shadow rounded-lg p-4 border border-light text-dark ${className}`}
     >
       <div className="flex items-center justify-between mb-2">
         <h4 className="text-sm font-medium text-dark">{title}</h4>

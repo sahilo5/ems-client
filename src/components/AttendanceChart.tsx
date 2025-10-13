@@ -35,12 +35,19 @@ import {
             />
           </YAxis>
   
-          <Tooltip />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "rgba(255, 255, 255, 0.7)",
+              backdropFilter: "blur(5px)",
+              border: "1px solid white",
+              borderRadius: "10px",
+            }}
+          />
           <Legend verticalAlign="top" align="center" />
   
           {/* Bars */}
-          <Bar dataKey="present" fill="#586E9A" name="Present (Blue)" />
-          <Bar dataKey="absent" fill="#857373" name="Absent (Brown)" />
+          <Bar dataKey="present" fill="#4946ff" name="Present " />
+          <Bar dataKey="absent" fill="#ff5e5e" name="Absent " />
         </BarChart>
       </ResponsiveContainer>
     );

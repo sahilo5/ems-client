@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar, { NavItem } from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import Loader from "../../components/Loader";
-import { CalendarCheck2Icon, CalendarCheckIcon,  CircleDollarSign,  DollarSign,  DoorOpen, HomeIcon, IndianRupee, LogOut, LucideBadgeDollarSign, Settings, UserIcon, Users2, FileText } from "lucide-react";
+import {  CalendarCheckIcon,  DoorOpen, HomeIcon, IndianRupee, LogOut, Settings, UserIcon, Users2, FileText } from "lucide-react";
 import { api } from "../../utils/api";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -111,7 +111,7 @@ const DashboardLayout: React.FC = () => {
         logoutLabel="Sign out"
         logoutIcon={<LogOut className="w-4 h-4" />}
       />
-      <div className="flex flex-col flex-1 bg-light overflow-hidden">
+      <div className="backdrop-blur-sm bg-white/10 flex flex-col flex-1 overflow-hidden">
         <div className="h-14">
           <Navbar
             companyName={companyName}

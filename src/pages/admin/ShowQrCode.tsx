@@ -9,7 +9,7 @@ const ShowQrCode = () => {
   const { qrToken, loading, fetchQrToken,countdown } = useShowQrCode();
 
   return (
-    <div className="flex flex-col items-center justify-center bg-light w-full p-8 border border-light">
+    <div className="flex flex-col items-center justify-center w-full p-8 backdrop-blur-lg bg-white/40 text-dark  border-1 border-white rounded-lg shadow-inner shadow-white/50">
       <h2 className="text-2xl font-bold text-dark mb-4">Attendance QR Code</h2>
 
       <div className="text-center">
@@ -28,7 +28,7 @@ const ShowQrCode = () => {
     </div>
 
     {qrToken ? (
-        <div className="p-4 bg-white rounded-xl shadow-md">
+        <div className="p-4 bg-white/80 border-2 border-white rounded-xl shadow-md">
             <QRCode value={qrToken} size={200} />
         </div>
     ) : (
