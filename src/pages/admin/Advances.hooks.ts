@@ -30,8 +30,9 @@ export const useAdvances = () => {
       });
       if (res.success) setAdvances(res.data);
       else showToast(res.message, "error");
-    } catch (err: any) {
-      showToast(err.message, "error");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "An unknown error occurred";
+      showToast(message, "error");
     } finally {
       setLoading(false);
     }
@@ -52,8 +53,32 @@ export const useAdvances = () => {
         showToast("Advance added successfully", "success");
         fetchAdvances();
       } else showToast(res.message, "error");
-    } catch (err: any) {
-      showToast(err.message, "error");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "An unknown error occurred";
+      showToast(message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateAdvance = async (advanceData: Advance) => {
+    setLoading(true);
+    try {
+      const res = await api(`/admin/salary/advances/${advanceData.id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(advanceData),
+      });
+      if (res.success) {
+        showToast("Advance updated successfully", "success");
+        fetchAdvances();
+      } else showToast(res.message, "error");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "An unknown error occurred";
+      showToast(message, "error");
     } finally {
       setLoading(false);
     }
@@ -77,6 +102,7 @@ export const useAdvances = () => {
     loading,
     fetchAdvances,
     addAdvance,
+    updateAdvance,
     AdvanceColumns,
   };
 };

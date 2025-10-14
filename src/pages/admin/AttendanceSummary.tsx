@@ -182,7 +182,7 @@ const buildYearlyRows = () => {
   return (
     <div className="flex flex-col md:flex-row gap-6 mt-6 backdrop-blur-lg bg-white/30 border rounded-lg border-white">
       {/* LEFT: Calendar */}
-      <div className="w-full md:w-2/3 border-1 rounded-lg p-4 border-white">
+      <div className="w-full md:w-2/3 rounded-lg p-4">
         <div className="flex items-center justify-between mb-3">
           <input
             aria-label="Select month and year"

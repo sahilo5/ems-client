@@ -28,7 +28,6 @@ const SalaryManagement = () => {
   title="Salary Config"
   data={configs}
   columns={ConfigColumns}
-  selectable={true}
   rowActions={(row) => (
     <div className="flex gap-2">
       {/* Row-level Edit */}
@@ -61,20 +60,22 @@ const SalaryManagement = () => {
           {loading && <Loader size={48} color="text-primary" />}
         </Tab>
 
-        {/* Salary Logs Tab */}
-        <Tab index={2} label="Logs" onClick={fetchLogs}>
-          <Browse title="Salary Logs" data={logs} columns={LogColumns} selectable={false} />
-          {loading && <Loader size={48} color="text-primary" />}
-        </Tab>
+        
 
         {/* Advances Tab */}
-        <Tab index={3} label="Advances">
+        <Tab index={2} label="Advances">
           <Advances />
         </Tab>
 
         {/* Other Payments Tab */}
-        <Tab index={4} label="Other Payments">
+        <Tab index={3} label="Other Payments">
           <OtherPayments />
+        </Tab>
+        
+        {/* Salary Logs Tab */}
+        <Tab index={4} label="Logs" onClick={fetchLogs}>
+          <Browse title="Salary Logs" data={logs} columns={LogColumns} selectable={false} />
+          {loading && <Loader size={48} color="text-primary" />}
         </Tab>
       </Tabs>
 

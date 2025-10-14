@@ -32,7 +32,7 @@ const MarkAttendance = () => {
     e.preventDefault();
     const success = await onSubmitAttendance();
     if (success) {
-      setRefreshKey((prev) => prev + 1); // 🔄 bump key to trigger reload
+      setRefreshKey((prev) => prev + 1); 
     }
   };
 

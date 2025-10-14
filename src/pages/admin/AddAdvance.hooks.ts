@@ -7,7 +7,7 @@ import { AuthContext } from "../../context/AuthContext";
 export const useAddAdvance = (onClose: () => void) => {
   const { token } = useContext(AuthContext);
   const [username, setUsername] = useState("");
-  const [advanceDate, setAdvanceDate] = useState("");
+  const [advanceDate, setAdvanceDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [title, setTitle] = useState("");
   const [remark, setRemark] = useState("");
   const [amount, setAmount] = useState("");

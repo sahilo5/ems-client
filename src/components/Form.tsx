@@ -8,7 +8,7 @@ import Button from "./Button";
 type InputFieldType = "text" | "email" | "password" | "date" | "number";
 
 // Define all allowed field types
-type FormField =
+export type FormField =
   | {
       type: InputFieldType;
       name: string;

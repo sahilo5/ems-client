@@ -51,7 +51,7 @@ export const Tabs: React.FC<TabsProps> = ({ defaultIndex = 0, children }) => {
                 }}
                 className={`px-4 py-2 text-sm backdrop-blur-lg bg-white/20 font-medium text-accent rounded-md shadow-2xl transition-all duration-200 ${activeIndex === index
                     ? "bg-white/40  border-1 shadow-md  border-white"
-                    : " bg-white/15 hover:text-accent-500 hover:bg-white/30 shadow-md"
+                    : " bg-white/10  hover:text-accent-500 hover:bg-white/50 shadow-md"
                   }`}
               >
                 {label}

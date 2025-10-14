@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Browse from "../../components/Browse";
 import Button from "../../components/Button";
-import { Check, FileX, RefreshCcw, X } from "lucide-react";
+import { Check, RefreshCcw, X } from "lucide-react";
 import Loader from "../../components/Loader";
 import MiniWindow from "../../components/MiniWindow";
 import Form from "../../components/Form";
@@ -28,7 +28,6 @@ const AdminLeaveManagement = () => {
         title="All Leaves"
         data={leaves}
         columns={LeaveColumnHeaders}
-        selectable={true}
         rowActions={(row) => (
           <div className="flex gap-2">
             {/* Approve button */}
