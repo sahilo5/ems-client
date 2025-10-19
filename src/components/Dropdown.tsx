@@ -69,7 +69,7 @@ const Dropdown: React.FC<DropdownProps> = ({
               className="
                 absolute z-10 mt-1 w-full overflow-auto rounded-md border border-white/40 
                 bg-white/40 text-dark shadow-lg backdrop-blur-md focus:outline-none
-                max-h-60
+                max-h-60 
               "
             >
               {options.map((opt) => (

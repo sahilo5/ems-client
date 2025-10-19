@@ -92,8 +92,7 @@ const AddAdvance: React.FC<AddAdvanceProps> = ({ onClose }) => {
             error: errors.statusError,
             options: [
               { label: "Pending", value: "PENDING" },
-              { label: "Approved", value: "APPROVED" },
-              { label: "Rejected", value: "REJECTED" },
+              { label: "Repayed", value: "REPAYED" },
             ],
           },
         ]}

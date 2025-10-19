@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import Form from "../../components/Form";
 import Button from "../../components/Button";
 import { useAssignRole } from "./AssignRole.hooks";
+import Badge from "../../components/Badge";
 
 type AssignRoleProps = {
   userData: any;       
@@ -32,7 +33,7 @@ const AssignRole: React.FC<AssignRoleProps> = ({ userData, onClose }) => {
       </h2>
 
       <p className="mb-2 text-sm text-gray-600">
-        <strong>Current Role:</strong> {currentRole || "No role assigned"}
+        <strong>Current Role : </strong> <Badge  text={currentRole || "No role assigned"} variant="info" />
       </p>
 
       <Form

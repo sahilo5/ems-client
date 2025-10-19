@@ -2,7 +2,7 @@ import React from "react";
 import Label from "./Label";
 
 type InputProps = {
-  type?: "text" | "email" | "password" | "date" | "number";
+  type?: "text" | "email" | "password" | "date" | "month" | "number";
   label?: string;
   placeholder?: string;
   value: string;

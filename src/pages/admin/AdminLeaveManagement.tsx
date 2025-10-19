@@ -56,7 +56,7 @@ const AdminLeaveManagement = () => {
           <div className="space-x-2">
             {/* Refresh Button */}
             <Button
-              variant="refresh"
+              variant="tertiary"
               title="Refresh"
               onClick={handleGetAllLeaves}
             >

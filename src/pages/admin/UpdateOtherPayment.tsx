@@ -19,10 +19,10 @@ const UpdateOtherPayment: React.FC<UpdateOtherPaymentProps> = ({ onClose, paymen
   const fields: FormField[] = [
     {
       type: "text",
-      name: "username",
-      label: "Username",
-      value: formData.username,
-      onChange: (value: string) => setFormData({ ...formData, username: value }),
+      name: "employeeName",
+      label: "Employee Name",
+      value: formData.employeeName,
+      onChange: (value: string) => setFormData({ ...formData, employeeName: value }),
       disabled: true,
     },
     {

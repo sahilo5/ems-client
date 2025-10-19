@@ -12,7 +12,7 @@ export const useAssignRole = (userData: any, onClose: () => void) => {
 
   const { token } = useContext(AuthContext);
   const { showToast } = useToast();
-  const { handleGetAllUsers } = useUserManagement();
+  const { handleConfirm } = useUserManagement();
 
   
   /** Fetch all available roles */
@@ -70,10 +70,9 @@ export const useAssignRole = (userData: any, onClose: () => void) => {
       });
 
       showToast("Role updated successfully", "success");
-      handleGetAllUsers();
       onClose();
-    } catch (err) {
-      showToast("Failed to assign role", "error");
+    } catch (error) {
+      showToast((error as Error).message, "error");
     } finally {
       setLoading(false);
     }

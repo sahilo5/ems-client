@@ -41,7 +41,7 @@ const Button: React.FC<ButtonProps> = ({
       break;
     case "refresh":
       variantClass =
-        "bg-refresh/80 border border-refresh text-dark hover:bg-refresh/90 cursor-pointer hover:shadow-lg font-bold";
+        "bg-orange-300/70 border border-orange-300 text-dark hover:bg-orange-300/90 cursor-pointer hover:shadow-lg font-bold";
       break;
 
     default:

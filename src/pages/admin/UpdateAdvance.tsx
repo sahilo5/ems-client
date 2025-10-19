@@ -9,7 +9,7 @@ interface UpdateAdvanceProps {
 }
 
 const UpdateAdvance: React.FC<UpdateAdvanceProps> = ({ onClose, advance }) => {
-  const { formData, setFormData, updateAdvance, loading } = useUpdateAdvance(advance);
+  const { formData, setFormData, updateAdvance, loading, errors } = useUpdateAdvance(advance);
 
   const handleSubmit = async () => {
     await updateAdvance();
@@ -19,10 +19,10 @@ const UpdateAdvance: React.FC<UpdateAdvanceProps> = ({ onClose, advance }) => {
   const fields: FormField[] = [
     {
       type: "text",
-      name: "username",
-      label: "Username",
-      value: formData.username,
-      onChange: (value: string) => setFormData({ ...formData, username: value }),
+      name: "employeeName",
+      label: "Employee Name",
+      value: formData.employeeName,
+      onChange: (value: string) => setFormData({ ...formData, employeeName: value }),
       disabled: true,
     },
     {
@@ -31,6 +31,7 @@ const UpdateAdvance: React.FC<UpdateAdvanceProps> = ({ onClose, advance }) => {
       label: "Advance Date",
       value: formData.advanceDate,
       onChange: (value: string) => setFormData({ ...formData, advanceDate: value }),
+      error: errors.advanceDateError,
     },
     {
       type: "text",
@@ -38,6 +39,7 @@ const UpdateAdvance: React.FC<UpdateAdvanceProps> = ({ onClose, advance }) => {
       label: "Title",
       value: formData.title,
       onChange: (value: string) => setFormData({ ...formData, title: value }),
+      error: errors.titleError,
     },
     {
       type: "text",
@@ -45,6 +47,7 @@ const UpdateAdvance: React.FC<UpdateAdvanceProps> = ({ onClose, advance }) => {
       label: "Remark",
       value: formData.remark,
       onChange: (value: string) => setFormData({ ...formData, remark: value }),
+      error: errors.remarkError,
     },
     {
       type: "number",
@@ -52,13 +55,19 @@ const UpdateAdvance: React.FC<UpdateAdvanceProps> = ({ onClose, advance }) => {
       label: "Amount",
       value: formData.amount.toString(),
       onChange: (value: string) => setFormData({ ...formData, amount: parseFloat(value) }),
+      error: errors.amountError,
     },
     {
-      type: "text",
+      type: "dropdown",
       name: "status",
       label: "Status",
       value: formData.status,
       onChange: (value: string) => setFormData({ ...formData, status: value }),
+      error: errors.statusError,
+      options: [
+        { label: "Pending", value: "PENDING" },
+        { label: "Repayed", value: "REPAYED" },
+      ],
     },
   ];
 

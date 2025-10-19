@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import Badge from "./Badge";
 
 type Column<T> = {
   header: string;
@@ -11,8 +12,8 @@ type BrowseProps<T> = {
   footerContent?: React.ReactNode;
   title?: string;
   subtitle?: string;
-  headerActions?: React.ReactNode; // simplified
-  rowActions?: (row: T) => React.ReactNode; // new
+  headerActions?: React.ReactNode;
+  rowActions?: (row: T) => React.ReactNode;
 };
 
 function Browse<T extends Record<string, unknown>>({
@@ -95,6 +96,36 @@ function Browse<T extends Record<string, unknown>>({
 
     if (right < totalPages) pages.push(<span key="end-ellipsis">...</span>);
     return pages;
+  };
+
+  const renderCell = (row: T, col: Column<T>) => {
+    const value = row[col.accessor];
+    const header = col.header.toLowerCase();
+
+    if (header.includes("role")) {
+      return Array.isArray(value) ? (
+        <div className="flex flex-wrap gap-1">
+          {value.map((role: string, index: number) => (
+            <Badge key={index} text={role} variant="info" />
+          ))}
+        </div>
+      ) : (
+        <Badge text={String(value)} variant="info" />
+      );
+    }
+
+    if (header.includes("status")) {
+      const status = String(value).toLowerCase();
+      let variant: "success" | "danger" | "warning" | "info" | "neutral" =
+        "neutral";
+      if (status === "pending") variant = "warning";
+      if (status === "rejected") variant = "danger";
+      if (status === "paid" || status === "done" || status === "approved" || status === "repayed")
+        variant = "success";
+      return <Badge text={String(value)} variant={variant} />;
+    }
+
+    return String(value);
   };
 
   return (
@@ -190,7 +221,7 @@ function Browse<T extends Record<string, unknown>>({
                 >
                   {columns.map((col, colIdx) => (
                     <td key={colIdx} className="px-4 py-2 text-gray-800">
-                      {String(row[col.accessor])}
+                      {renderCell(row, col)}
                     </td>
                   ))}
 

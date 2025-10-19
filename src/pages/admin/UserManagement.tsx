@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { Tabs, Tab } from "../../components/Tabs";
 import Browse from "../../components/Browse";
 import Button from "../../components/Button";
 import { CheckCheck, Edit, FileX, Plus, RefreshCcw } from "lucide-react";
-import { useUserManagement } from "./UserManagement.hooks";
+import { useUserManagement, User } from "./UserManagement.hooks";
 import Loader from "../../components/Loader";
 import MiniWindow from "../../components/MiniWindow";
 import EditUser from "./EditUser";
@@ -17,20 +16,17 @@ const UserManagement = () => {
 
   // For Edit User
   const [openEdit, setOpenEdit] = useState(false);
-  const [editUserData, setEditUserData] = useState<any>(null);
+  const [editUserData, setEditUserData] = useState<User | null>(null);
 
   // State for Assign Role
   const [openAssignRole, setOpenAssignRole] = useState(false);
-  const [assignUserData, setAssignUserData] = useState<any>(null);
+  const [assignUserData, setAssignUserData] = useState<User | null>(null);
 
   const {
-    UserData,
-    UserColumnHeaders,
     loading,
-    handleGetAllUsers,
-    handleUsersWithRoles,
-    UserWithRoleColumnHeaders,
-    UsersWithRoleData,
+    userData,
+    columnHeaders,
+    getUsers,
     isOpen,
     setIsOpen,
     handleConfirm,
@@ -39,113 +35,71 @@ const UserManagement = () => {
 
   return (
     <div className="space-y-2">
-      <Tabs defaultIndex={0}>
-        {/* --- Roles Tab --- */}
-        <Tab index={0} label="Roles" onClick={handleUsersWithRoles}>
-          <Browse
-            title="Roles"
-            data={UsersWithRoleData}
-            columns={UserWithRoleColumnHeaders}
-            rowActions={(row) => (
-              <div className="flex gap-2">
-                {/* Assign Role */}
-                <Button
-                  variant="safe"
-                  title="Assign Role"
-                  onClick={() => {
-                    setAssignUserData(row);
-                    setOpenAssignRole(true);
-                  }}
-                >
-                  <CheckCheck className="size-4" />
-                </Button>
-              </div>
-            )}
-            headerActions={
-              <div className="space-x-2">
-                <Button variant="tertiary" title="Refresh" onClick={handleUsersWithRoles}>
-                  <RefreshCcw className="size-5" />
-                </Button>
-              </div>
-            }
-          />
+      <Browse
+        title="Users"
+        data={userData}
+        columns={columnHeaders}
+        rowActions={(row) => (
+          <div className="flex gap-2">
+            {/* Edit */}
+            <Button
+              variant="refresh"
+              title="Edit"
+              onClick={() => {
+                setEditUserData(row);
+                setOpenEdit(true);
+              }}
+            >
+              <Edit className="size-4" />
+            </Button>
 
-          {loading && (
-            <div className="flex items-center justify-center bg-none">
-              <Loader size={48} color="text-primary" />
-            </div>
-          )}
-        </Tab>
+            {/* Assign Role */}
+            <Button
+              variant="safe"
+              title="Assign Role"
+              disabled= {row.roles[0] === "ADMIN"}
+              onClick={() => {
+                setAssignUserData(row);
+                setOpenAssignRole(true);
+              }}
+            >
+              <CheckCheck className="size-4" />
+            </Button>
 
+            {/* Delete */}
+            <Button
+              variant="danger"
+              title="Delete"
+              disabled= {row.roles[0] === "ADMIN"}
+              onClick={() => {
+                setIsOpen(true);
+                setSelectedUsers([row]);
+              }}
+            >
+              <FileX className="size-4" />
+            </Button>
+          </div>
+        )}
+        headerActions={
+          <div className="space-x-2">
+            {/* Add */}
+            <Button variant="tertiary" title="Add" onClick={() => setOpenAdd(true)}>
+              <Plus className="size-5" />
+            </Button>
 
-        {/* --- Users Tab --- */}
-        <Tab index={1} label="Users" onClick={handleGetAllUsers}>
-          <Browse
-            title="Users"
-            data={UserData}
-            columns={UserColumnHeaders}
-            rowActions={(row) => (
-              <div className="flex gap-2">
-                {/* Edit */}
-                <Button
-                  variant="refresh"
-                  title="Edit"
-                  onClick={() => {
-                    setEditUserData(row);
-                    setOpenEdit(true);
-                  }}
-                >
-                  <Edit className="size-4" />
-                </Button>
+            {/* Refresh */}
+            <Button variant="tertiary" title="Refresh" onClick={getUsers}>
+              <RefreshCcw className="size-5" />
+            </Button>
+          </div>
+        }
+      />
 
-                {/* Assign Role */}
-                <Button
-                  variant="safe"
-                  title="Assign Role"
-                  onClick={() => {
-                    setAssignUserData(row);
-                    setOpenAssignRole(true);
-                  }}
-                >
-                  <CheckCheck className="size-4" />
-                </Button>
-
-                {/* Delete */}
-                <Button
-                  variant="danger"
-                  title="Delete"
-                  onClick={() => {
-                    setIsOpen(true);
-                    setSelectedUsers([row]);
-                  }}
-                >
-                  <FileX className="size-4" />
-                </Button>
-              </div>
-            )}
-            headerActions={
-              <div className="space-x-2">
-                {/* Add */}
-                <Button variant="tertiary" title="Add" onClick={() => setOpenAdd(true)}>
-                  <Plus className="size-5" />
-                </Button>
-
-                {/* Refresh */}
-                <Button variant="tertiary" title="Refresh" onClick={handleGetAllUsers}>
-                  <RefreshCcw className="size-5" />
-                </Button>
-              </div>
-            }
-          />
-
-
-          {loading && (
-            <div className="flex items-center justify-center bg-light">
-              <Loader size={48} color="text-primary" />
-            </div>
-          )}
-        </Tab>
-      </Tabs>
+      {loading && (
+        <div className="flex items-center justify-center bg-light">
+          <Loader size={48} color="text-primary" />
+        </div>
+      )}
 
       {/* Add New User Window */}
       <MiniWindow isOpen={openAdd} onClose={() => setOpenAdd(false)} size="small">

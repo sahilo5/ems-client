@@ -92,6 +92,7 @@ export const useAdminLeaveManagement = () => {
     { header: "Description", accessor: "description" },
     { header: "Status", accessor: "status" },
     { header: "Applied On", accessor: "createdAt" },
+    
   ];
 
   return {

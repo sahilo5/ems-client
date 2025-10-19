@@ -167,7 +167,6 @@ const SystemSettings = () => {
   title="Holiday List"
   data={holidayData}
   columns={HolidayColumns}
-  selectable={true}
   rowActions={(row) => (
     <div className="flex gap-2">
       {/* Edit Holiday */}

@@ -10,6 +10,7 @@ export const useUpdateOtherPayment = (payment: OtherPayment) => {
 
   const [formData, setFormData] = useState({
     username: payment.username,
+    employeeName: payment.employeeName,
     date: payment.date,
     type: payment.type,
     remark: payment.remark,

@@ -11,9 +11,9 @@ type ToggleProps = {
 const Toggle: React.FC<ToggleProps> = ({
   checked,
   onChange,
-  label,
-  activeLabel = "Active",
-  inactiveLabel = "Inactive",
+  label,  
+  activeLabel = "",
+  inactiveLabel = "",
 }) => {
   return (
     <div className="flex items-center gap-3">
@@ -21,16 +21,16 @@ const Toggle: React.FC<ToggleProps> = ({
       <div
         onClick={() => onChange(!checked)}
         className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-all duration-300 ${
-          checked ? "bg-primary" : "bg-gray-300"
+          checked ? "bg-primary" : "bg-white/60"
         }`}
       >
         <div
-          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-            checked ? "translate-x-6" : "translate-x-0"
+          className={` w-4 h-4 rounded-full shadow-md transform transition-transform ${
+            checked ? "translate-x-6 bg-light" : "translate-x-0 bg-primary"
           }`}
         />
       </div>
-      <span className={`text-sm font-medium ${checked ? "text-primary" : "text-gray-500"}`}>
+      <span className={`text-sm font-medium ${checked ? "text-white" : "text-gray-500"}`}>
         {checked ? activeLabel : inactiveLabel}
       </span>
     </div>

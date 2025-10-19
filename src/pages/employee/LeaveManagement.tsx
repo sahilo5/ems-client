@@ -9,20 +9,14 @@ const LeaveManagement = () => {
   
     return (
       <div className="space-y-2">
-        <Tabs defaultIndex={0}>
-          {/* --- Apply Leave Tab --- */}
-          <Tab index={0} label="Apply Leave">
-            <div className="flex flex-col space-y-4">
+        
                 <EmployeeLeaveManagement/>
               {loading && (
                 <div className="flex items-center justify-center bg-light">
                   <Loader size={48} color="text-primary" />
                 </div>
               )}
-            </div>
-          </Tab>
-  
-        </Tabs>
+            
       </div>
     );
   };

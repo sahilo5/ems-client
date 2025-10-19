@@ -8,6 +8,7 @@ export type Advance = {
   employeeName: string;
   username: string;
   advanceDate: string;
+  repayDate: string;
   title: string;
   remark: string;
   amount: number;
@@ -63,6 +64,14 @@ export const useAdvances = () => {
 
   const updateAdvance = async (advanceData: Advance) => {
     setLoading(true);
+    if(advanceData.status === "REPAYED"){
+      const today: Date = new Date();
+      advanceData.repayDate = today.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    }else{
+      advanceData.repayDate = "";
+    }
+    console.log(advanceData.repayDate);
+    console.log("Full payload:", advanceData);
     try {
       const res = await api(`/admin/salary/advances/${advanceData.id}`, {
         method: "PUT",
@@ -91,10 +100,11 @@ export const useAdvances = () => {
   const AdvanceColumns: { header: string; accessor: keyof Advance }[] = [
     { header: "Employee", accessor: "employeeName" },
     { header: "Title", accessor: "title" },
-    { header: "Amount", accessor: "amount" },
-    { header: "Date", accessor: "advanceDate" },
     { header: "Remark", accessor: "remark" },
+    { header: "Advance Date", accessor: "advanceDate" },
+    { header: "Repay Date", accessor: "repayDate" },
     { header: "Status", accessor: "status" },
+    { header: "Amount", accessor: "amount" },
   ];
 
   return {

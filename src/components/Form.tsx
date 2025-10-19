@@ -5,7 +5,7 @@ import Dropdown from "./Dropdown";
 import Button from "./Button";
 
 // Supported input types
-type InputFieldType = "text" | "email" | "password" | "date" | "number";
+type InputFieldType = "text" | "email" | "password" | "date" | "month" | "number";
 
 // Define all allowed field types
 export type FormField =

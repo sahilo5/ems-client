@@ -2,76 +2,84 @@ import { api } from "../../utils/api";
 import { AuthContext } from "../../context/AuthContext";
 import { useState, useContext, useEffect } from "react";
 import { useToast } from "../../components/ToastProvider";
-import { useNavigate } from "react-router-dom";
+
+export type User = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  username: string;
+  roles: string[];
+};
 
 export const useUserManagement = () => {
   const [loading, setLoading] = useState(false);
-  const [UserData, setUserData] = useState([]);
-  const [UsersWithRoleData, setUsersWithRoleData] = useState([]);
+  const [userData, setUserData] = useState<User[]>([]);
   const { token } = useContext(AuthContext);
   const { showToast } = useToast();
-  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
 
-
-  const handleGetAllUsers = async () => {
+  const getUsers = async () => {
     setLoading(true);
     try {
-      const response = await api(`/admin/getAllUsers`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const [usersResponse, rolesResponse] = await Promise.all([
+        api(`/admin/getAllUsers`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }),
+        api(`/admin/getAllUsersWithRoles`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }),
+      ]);
 
+      if (usersResponse.success && rolesResponse.success) {
+        const usersData = usersResponse.data;
+        const rolesData = rolesResponse.data;
 
-      const transformedData = response.data.map((user: any) => ({
-        name: `${user.firstName} ${user.lastName}`,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        username: user.username,
-      }));
-      setUserData(transformedData);
+        const rolesMap = new Map(
+          rolesData.map((user: { username: string; roles: string[] }) => [
+            user.username,
+            user.roles || [],
+          ])
+        );
 
-    } catch (error) {
-      showToast(error, "error");
-    } finally {
-      setLoading(false);
-    }
-  };
+        const mergedData: User[] = usersData.map(
+          (user: {
+            id: string;
+            firstName: string;
+            lastName: string;
+            email: string;
+            phoneNumber: string;
+            username: string;
+          }) => ({
+            ...user,
+            name: `${user.firstName} ${user.lastName}`,
+            roles: rolesMap.get(user.username) || [],
+          })
+        );
 
-  const handleUsersWithRoles = async () => {
-    setLoading(true);
-    try {
-      const response = await api(`/admin/getAllUsersWithRoles`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.success) {
-        const transformedData = response.data.map((user: any) => ({
-          name: `${user.firstName} ${user.lastName}`,
-          username: user.username,
-          roles: user.roles || []
-        }));
-        setUsersWithRoleData(transformedData);
+        setUserData(mergedData);
       } else {
-        showToast(response.message, "error");
+        if (!usersResponse.success || !rolesResponse.success) showToast(usersResponse.message, "error");
       }
     } catch (error) {
-      showToast(error, "error");
+      showToast((error as Error).message, "error");
     } finally {
       setLoading(false);
     }
   };
 
-
-  const handleUpdateUser = async (userData: any) => {
+  const handleUpdateUser = async (userData: Record<string, unknown>) => {
     setLoading(true);
     try {
       const response = await api(`/admin/updateUser`, {
@@ -85,20 +93,20 @@ export const useUserManagement = () => {
 
       if (response.success) {
         showToast("User updated successfully", "success");
-        handleGetAllUsers();
+        getUsers();
         setIsOpen(false);
       } else {
         showToast(response.message, "error");
       }
     } catch (error) {
-      showToast(error.message, "error");
+      showToast((error as Error).message, "error");
     } finally {
       setLoading(false);
     }
   };
 
 
-  const handleBulkDeleteUsers = async (selectedUsers: any[]) => {
+  const handleBulkDeleteUsers = async (selectedUsers: { username: string }[]) => {
     if (!selectedUsers.length) {
       showToast("No users selected for deletion", "error");
       return;
@@ -123,12 +131,12 @@ export const useUserManagement = () => {
       }
       setSelectedUsers([]);
     } catch (error) {
-      showToast(error.message, "error");
+      showToast((error as Error).message, "error");
       setSelectedUsers([]);
     } finally {
       setLoading(false);
     }
-    handleGetAllUsers();
+    getUsers();
     selectedUsers = [];
   };
 
@@ -139,25 +147,27 @@ export const useUserManagement = () => {
   };
 
   useEffect(() => {
-    handleUsersWithRoles();
-    handleGetAllUsers();
+    getUsers();
   }, []);
 
-  const UserColumnHeaders: { header: string; accessor: keyof typeof UserData[0] }[] = [
+  const columnHeaders: { header: string; accessor: keyof User }[] = [
     { header: "Name", accessor: "name" },
     { header: "Email", accessor: "email" },
     { header: "Phone Number", accessor: "phoneNumber" },
     { header: "Username", accessor: "username" },
-  ];
-
-  const UserWithRoleColumnHeaders: { header: string; accessor: keyof typeof UserData[0] }[] = [
-    { header: "Name", accessor: "name" },
-    { header: "Username", accessor: "username" },
-    { header: "Role", accessor: "roles" },
+    { header: "Roles", accessor: "roles" },
   ];
 
   return {
-    handleGetAllUsers, UserData, UserColumnHeaders, loading, handleUsersWithRoles, UserWithRoleColumnHeaders,
-    UsersWithRoleData, navigate, isOpen, setIsOpen, handleConfirm, selectedUsers, handleUpdateUser, setSelectedUsers
+    loading,
+    userData,
+    columnHeaders,
+    getUsers,
+    isOpen,
+    setIsOpen,
+    handleConfirm,
+    selectedUsers,
+    setSelectedUsers,
+    handleUpdateUser,
   };
 };

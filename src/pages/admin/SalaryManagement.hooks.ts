@@ -82,6 +82,9 @@ export const useSalaryManagement = () => {
     { header: "Amount Paid", accessor: "amountPaid" },
     { header: "Remarks", accessor: "remarks" },
     { header: "Status", accessor: "status" },
+    { header: "From Date", accessor: "startDate" },
+    { header: "To Date", accessor: "endDate" },
+    { header: "To Date", accessor: "endDate" },
   ];
 
   return { configs, logs, loading, fetchConfigs, fetchLogs, updateConfig, ConfigColumns, LogColumns };
