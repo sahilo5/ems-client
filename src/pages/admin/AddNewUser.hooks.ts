@@ -14,9 +14,6 @@ export const useAddNewUser = (onClose: () => void) => {
   const [open, setOpen] = useState(false);
   const { showToast } = useToast();
 
-  const {
-    handleGetAllUsers,
-  } = useUserManagement();
 
   const handleRegister = async () => {
     try {
@@ -25,7 +22,6 @@ export const useAddNewUser = (onClose: () => void) => {
         body: JSON.stringify({ firstName, lastName, email, phoneNumber, username, password, confirmPassword }),
       });
 
-      handleGetAllUsers();
       showToast(response.message, "success");
       onClose();
     } catch (err: any) {

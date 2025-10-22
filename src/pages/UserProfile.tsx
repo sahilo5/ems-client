@@ -17,7 +17,7 @@ const UserProfile = () => {
   const [openEdit, setOpenEdit] = useState(false);
   const [editUserData, setEditUserData] = useState<any>(null);
 
-  if (loading) return <div className="text-center py-10"><Loader size={48} color="text-primary" /></div>;
+  if (loading) return <Loader fullScreen />;
   if (!profile) return <div className="text-center py-10">No user found</div>;
 
   return (

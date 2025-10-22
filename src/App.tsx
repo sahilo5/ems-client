@@ -6,13 +6,14 @@ import DashboardLayout from "./pages/layouts/DashboardLayout";
 import { getRoutesByRole } from "./routes";
 import React, { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
+import Loader from "./components/Loader";
 
 function App() {
   const { role, loading } = useContext(AuthContext);
 
 if (loading) {
-  return <div className="flex justify-center items-center h-screen">Loading...</div>;
-}  
+  return <Loader fullScreen />;
+}
   const roleRoutes = getRoutesByRole(role);
 
   return (

@@ -96,9 +96,7 @@ const UserManagement = () => {
       />
 
       {loading && (
-        <div className="flex items-center justify-center bg-light">
-          <Loader size={48} color="text-primary" />
-        </div>
+        <Loader fullScreen></Loader>
       )}
 
       {/* Add New User Window */}

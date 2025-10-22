@@ -99,8 +99,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               if (typeof item.onClick === "function") item.onClick();
             }}
             className={({ isActive }) =>
-        `group flex items-center gap-3 rounded-xl text-[15px] font-medium 
-         transition-all duration-300 ease-in-out
+        `group flex items-center gap-3 rounded-xl text-[15px] font-medium
+        focus:outline-none
         ${collapsed
           ?"px-3 py-2.5"
           :"px-4 py-2.5"

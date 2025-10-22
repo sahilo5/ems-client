@@ -81,9 +81,8 @@ export const useAdminDashboard = () => {
 
         if (s.status === "PRESENT" || s.status === "HALF_DAY") {
           summaryByDate[s.date].present += 1;
-        } else {
-          summaryByDate[s.date].absent += 1;
-        }
+        } 
+        summaryByDate[s.date].absent =  employees.length -summaryByDate[s.date].present;
       });
 
       // Convert grouped object → array for recharts

@@ -32,11 +32,7 @@ const SystemSettings = () => {
   } = useSystemSettings();
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[300px]">
-        <Loader size={48} color="text-primary" />
-      </div>
-    );
+    return <Loader fullScreen />;
   }
 
   const groupByCategory = (cat: string) =>
@@ -170,7 +166,7 @@ const SystemSettings = () => {
   rowActions={(row) => (
     <div className="flex gap-2">
       {/* Edit Holiday */}
-      <Button
+      <Button 
         variant="refresh"
         title="Edit"
         onClick={() => {

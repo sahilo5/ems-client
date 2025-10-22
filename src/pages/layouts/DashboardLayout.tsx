@@ -97,11 +97,7 @@ const DashboardLayout: React.FC = () => {
 
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen w-screen bg-light">
-        <Loader size={48} color="text-primary" />
-      </div>
-    );
+    return <Loader fullScreen />;
   }
 
   return (

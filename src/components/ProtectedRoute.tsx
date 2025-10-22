@@ -9,11 +9,7 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: JSX.Element; all
   const location = useLocation();
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader size={48} color="text-primary" />
-      </div>
-    );
+    return <Loader fullScreen />;
   }
 
   if (!isAuthenticated || !allowedRoles.includes(role || "")) {

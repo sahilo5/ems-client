@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Label from "./Label";
+import { useToast } from "./ToastProvider";
 
 type TimeInputProps = {
   label?: string;
@@ -18,6 +19,7 @@ const TimeInput: React.FC<TimeInputProps> = ({
   disabled = false,
   className = "",
 }) => {
+  const { showToast } = useToast();
   const [hours, setHours] = useState(value.split(":")[0] || "");
   const [minutes, setMinutes] = useState(value.split(":")[1] || "");
 
@@ -31,7 +33,7 @@ const TimeInput: React.FC<TimeInputProps> = ({
   // 🔄 Update parent whenever hours or minutes change
   useEffect(() => {
     if (hours !== "" && minutes !== "") {
-      onChange(`${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}`);
+      onChange(`${hours}:${minutes}`);
     } else {
       onChange("");
     }
@@ -40,14 +42,25 @@ const TimeInput: React.FC<TimeInputProps> = ({
   return (
     <div className={`flex flex-col space-y-1 ${className}`}>
       {label && <Label text={label} status="Required" />}
-      <div className="flex gap-2">
+      <div className="flex flex-col md:flex-row gap-3">
         <input
-          type="number"
-          min="0"
-          max="23"
+          type="text"
+          maxLength={2}
           placeholder="HH"
           value={hours}
-          onChange={(e) => setHours(e.target.value)}
+          onChange={(e) => {
+            const val = e.target.value;
+            if (!/^\d{0,2}$/.test(val)) {
+              showToast("Hours must be 0-2 digits only", "error");
+              return;
+            }
+            const num = parseInt(val, 10);
+            if (val.length === 2 && (isNaN(num) || num > 23)) {
+              showToast("Hours must be between 00 and 23", "error");
+              return;
+            }
+            setHours(val);
+          }}
           disabled={disabled}
           className={`px-3 py-2 text-sm rounded-md border bg-white/30 backdrop-blur-sm text-dark text-center
             focus:outline-none
@@ -59,12 +72,23 @@ const TimeInput: React.FC<TimeInputProps> = ({
         />
         <span className="flex items-center font-bold">:</span>
         <input
-          type="number"
-          min="0"
-          max="59"
+          type="text"
+          maxLength={2}
           placeholder="MM"
           value={minutes}
-          onChange={(e) => setMinutes(e.target.value)}
+          onChange={(e) => {
+            const val = e.target.value;
+            if (!/^\d{0,2}$/.test(val)) {
+              showToast("Minutes must be 0-2 digits only", "error");
+              return;
+            }
+            const num = parseInt(val, 10);
+            if (val.length === 2 && (isNaN(num) || num > 59)) {
+              showToast("Minutes must be between 00 and 59", "error");
+              return;
+            }
+            setMinutes(val);
+          }}
           disabled={disabled}
           className={`px-3 py-2 text-sm rounded-md border bg-white/30 backdrop-blur-sm text-dark text-center
             focus:outline-none

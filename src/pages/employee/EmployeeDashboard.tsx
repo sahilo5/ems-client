@@ -10,7 +10,7 @@ const EmployeeDashboard: React.FC<Props> = ({ username }) => {
   const { data, loading } = useEmployeeDashboard(username);
   const [showScanner, setShowScanner] = useState(false);
 
-  if (loading) return <Loader size={48} color="text-primary" />;
+  if (loading) return <Loader fullScreen />;
 
   return (
     <div className="relative min-h-screen">

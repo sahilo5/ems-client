@@ -125,11 +125,7 @@ const ForgotPassword : React.FC<ForgotPasswordProps> = ({
     };
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center bg-none">
-                <Loader size={48} color="text-primary" />
-            </div>
-        );
+        return <Loader fullScreen />;
     }
 
     return (

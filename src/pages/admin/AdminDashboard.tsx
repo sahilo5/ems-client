@@ -8,7 +8,7 @@ import { AttendanceChart } from "../../components/AttendanceChart";
 const AdminDashboard: React.FC = () => {
   const { data, loading } = useAdminDashboard();
 
-  if (loading) return <Loader size={48} color="text-primary" />;
+  if (loading) return <Loader fullScreen />;
 
   return (
     <div className="space-y-6">

@@ -131,6 +131,15 @@ export const useMarkAttendance = () => {
     if (mode === "update") {
       if (!checkin && !checkout) {
         newErrors.timeError = "At least one of Check-In or Check-Out required";
+      } else {
+        // Validate time format HH:MM
+        const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+        if (checkin && !timeRegex.test(checkin)) {
+          newErrors.timeError = "Check-In must be in HH:MM format (e.g., 09:00)";
+        }
+        if (checkout && !timeRegex.test(checkout)) {
+          newErrors.timeError = "Check-Out must be in HH:MM format (e.g., 23:18)";
+        }
       }
     }
 
