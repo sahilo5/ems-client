@@ -162,6 +162,14 @@ const SalaryPayment: React.FC = () => {
                                     <span className="font-medium">{salarySummary.workingDays - salarySummary.presentDays}</span>
                                 </li>
                                 <li className="flex justify-between">
+                                    <span>Leaves</span>
+                                    <span className="font-medium">{salarySummary.leaves}</span>
+                                </li>
+                                <li className="flex justify-between">
+                                    <span>Sandwitch Leaves</span>
+                                    <span className="font-medium">{salarySummary.sandwichedLeaves}</span>
+                                </li>
+                                <li className="flex justify-between">
                                     <span>Per Day Salary</span>
                                     <span className="font-medium">{salarySummary.perDayAmount.toFixed(2)}</span>
                                 </li>

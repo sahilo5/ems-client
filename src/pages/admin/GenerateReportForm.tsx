@@ -3,8 +3,10 @@ import Dropdown from "../../components/Dropdown";
 import Button from "../../components/Button";
 import Loader from "../../components/Loader";
 import Browse from "../../components/Browse";
-import { Download } from "lucide-react";
-import { useGenerateReport, ReportType } from "./useGenerateReport";
+import SalaryReport from "./SalaryReport";
+import Label from "../../components/Label";
+import { Download, Printer } from "lucide-react";
+import { useGenerateReport, ReportType, SalarySummary, RepaymentSummary, OtherPaymentsSummary } from "./GenerateReportForm.hooks";
 
 const GenerateReportForm: React.FC = () => {
   const {
@@ -25,10 +27,7 @@ const GenerateReportForm: React.FC = () => {
     exportReport,
   } = useGenerateReport();
 
-  const employeeOptions = employees.map((emp) => ({
-    label: emp.name,
-    value: emp.id.toString(),
-  }));
+  const employeeOptions = employees;
 
   const reportTypeOptions: { label: string; value: ReportType }[] = [
     { label: "Salary", value: "Salary" },
@@ -75,103 +74,104 @@ const GenerateReportForm: React.FC = () => {
   };
 
   return (
-    <div className="w-full backdrop-blur-sm bg-white/40 text-dark shadow-inner shadow-white/50 border-white p-4 rounded-lg border mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Employee Dropdown */}
-        <Dropdown
-          label="Employee Name"
-          options={employeeOptions}
-          value={selectedEmployee}
-          onChange={setSelectedEmployee}
-        />
-
-        {/* Report Type Dropdown */}
-        <Dropdown
-          label="Type"
-          options={reportTypeOptions}
-          value={reportType}
-          onChange={(value) => setReportType(value as ReportType)}
-        />
-
-        {/* Period Type Radio Buttons */}
-        <div className="flex flex-col space-y-2">
-          <label className="text-sm font-medium text-dark">Period</label>
-          <div className="flex items-center space-x-4">
-            <label className="flex items-center">
-              <input
-                type="radio"
-                value="month"
-                checked={periodType === "month"}
-                onChange={() => setPeriodType("month")}
-                className="mr-2"
+    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      {/* Left Side: Form */}
+      <div className="space-y-6">
+        <div className="bg-white/40 backdrop-blur-sm rounded-lg border border-white/60 shadow-inner shadow-white/20 p-6">
+          <h3 className="text-lg font-semibold mb-4 text-primary">Generate Report</h3>
+          <div className="flex flex-col gap-4 items-start mb-4">
+            <div className="w-full">
+              <Dropdown
+                label="Employee"
+                options={employeeOptions}
+                value={selectedEmployee}
+                onChange={setSelectedEmployee}
               />
-              Month
-            </label>
-            <label className="flex items-center">
-              <input
-                type="radio"
-                value="year"
-                checked={periodType === "year"}
-                onChange={() => setPeriodType("year")}
-                className="mr-2"
+            </div>
+            <div className="w-full">
+              <Dropdown
+                label="Type"
+                options={reportTypeOptions}
+                value={reportType}
+                onChange={(value) => setReportType(value as ReportType)}
               />
-              Year
-            </label>
+            </div>
+            <div className="w-full">
+              <Dropdown
+                label="Period"
+                options={[
+                  { label: "Month", value: "month" },
+                  { label: "Year", value: "year" },
+                ]}
+                value={periodType}
+                onChange={(value) => setPeriodType(value as "month" | "year")}
+              />
+            </div>
+            {periodType === "month" ? (
+              <div className="w-full flex flex-col space-y-2">
+                <Label text="Select Month" status="Required" />
+                <input
+                  type="month"
+                  value={month}
+                  onChange={(e) => setMonth(e.target.value)}
+                  className="border border-white/40 bg-white/30 backdrop-blur-sm rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/10"
+                />
+              </div>
+            ) : (
+              <div className="w-full">
+                <Dropdown
+                  label="Select Year"
+                  options={[
+                    { label: "2025", value: "2025" },
+                  ]}
+                  value={year}
+                  onChange={setYear}
+                />
+              </div>
+            )}
+            <Button variant="primary" className="px-6 py-2 w-full" onClick={generateReport} disabled={loading}>
+              {loading ? "Generating..." : "Generate"}
+            </Button>
           </div>
         </div>
-
-        {/* Conditional Selector */}
-        <div className="flex flex-col space-y-2">
-          <label className="text-sm font-medium text-dark">
-            {periodType === "month" ? "Select Month" : "Select Year"}
-          </label>
-          {periodType === "month" ? (
-            <input
-              type="month"
-              value={month}
-              onChange={(e) => setMonth(e.target.value)}
-              className="border border-white/40 bg-white/30 backdrop-blur-sm rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/10"
-            />
-          ) : (
-            <input
-              type="number"
-              value={year}
-              onChange={(e) => setYear(e.target.value)}
-              placeholder="Enter year"
-              className="border border-white/40 bg-white/30 backdrop-blur-sm rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/10"
-              min="2000"
-              max="2100"
-            />
-          )}
-        </div>
       </div>
 
-      {/* Generate Button */}
-      <div className="flex justify-center">
-        <Button onClick={generateReport} disabled={loading}>
-          {loading ? "Generating..." : "Generate Report"}
-        </Button>
+      {/* Right Side: Report Display */}
+      <div className="lg:col-span-4 bg-white/40 backdrop-blur-sm rounded-lg border border-white/60 shadow-inner shadow-white/20 max-md:p-3 p-6">
+        {reportData.length > 0 ? (
+          <div className="space-y-2">
+            {reportType === "Salary" ? (
+              <SalaryReport
+                salarySummary={(reportData[0] as { salarySummary: SalarySummary; repaymentSummary: RepaymentSummary | null; otherPaymentsSummary: OtherPaymentsSummary | null })?.salarySummary}
+                repaymentSummary={(reportData[0] as { salarySummary: SalarySummary; repaymentSummary: RepaymentSummary | null; otherPaymentsSummary: OtherPaymentsSummary | null })?.repaymentSummary}
+                otherPaymentsSummary={(reportData[0] as { salarySummary: SalarySummary; repaymentSummary: RepaymentSummary | null; otherPaymentsSummary: OtherPaymentsSummary | null })?.otherPaymentsSummary}
+              />
+            ) : (
+              <Browse
+                title={`${reportType} Report`}
+                data={reportData as Record<string, unknown>[]}
+                columns={getReportColumns() as { header: string; accessor: string }[]}
+                headerActions={
+                  <div className="space-x-2">
+                    <Button variant="tertiary" title="Export" onClick={exportReport}>
+                      <Download className="size-5" />
+                    </Button>
+                    <Button variant="tertiary" title="Print" onClick={() => window.print()}>
+                      <Printer className="size-5" />
+                    </Button>
+                  </div>
+                }
+              />
+            )}
+          </div>
+        ) : (
+          <>
+            <h3 className="text-lg font-semibold text-primary p-2">Report</h3>
+            <p className="text-gray-500">Report will be generated here...</p>
+          </>
+        )}
+        {loading && <Loader size={48} color="text-primary" />}
       </div>
-
-      {/* Report Display */}
-      {reportData.length > 0 && (
-        <div className="space-y-2">
-          <Browse
-            title={`${reportType} Report`}
-            data={reportData}
-            columns={getReportColumns()}
-            headerActions={
-              <div className="space-x-2">
-                <Button variant="tertiary" title="Export" onClick={exportReport}>
-                  <Download className="size-5" />
-                </Button>
-              </div>
-            }
-          />
-        </div>
-      )}
-
-      {loading && <Loader size={48} color="text-primary" />}
     </div>
   );
 };

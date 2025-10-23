@@ -6,7 +6,7 @@ import Browse from "../../components/Browse";
 import Form from "../../components/Form";
 import { useSystemSettings } from "./SystemSettings.hooks";
 import TimeInput from "../../components/TimeInput";
-import { Delete, Edit, FileX, Plus } from "lucide-react";
+import { Edit, FileX, Plus } from "lucide-react";
 import Dropdown from "../../components/Dropdown";
 
 const SystemSettings = () => {

@@ -42,7 +42,7 @@ const TimeInput: React.FC<TimeInputProps> = ({
   return (
     <div className={`flex flex-col space-y-1 ${className}`}>
       {label && <Label text={label} status="Required" />}
-      <div className="flex flex-col md:flex-row gap-3">
+      <div className="flex flex-col 2xl:flex-row gap-3">
         <input
           type="text"
           maxLength={2}
@@ -62,7 +62,7 @@ const TimeInput: React.FC<TimeInputProps> = ({
             setHours(val);
           }}
           disabled={disabled}
-          className={`px-3 py-2 text-sm rounded-md border bg-white/30 backdrop-blur-sm text-dark text-center
+          className={`flex-1 px-3 py-2 text-sm rounded-md border bg-white/30 backdrop-blur-sm text-dark text-center
             focus:outline-none
             ${error
               ? "border-red-500 focus:ring-2 focus:ring-red-500"
@@ -90,12 +90,12 @@ const TimeInput: React.FC<TimeInputProps> = ({
             setMinutes(val);
           }}
           disabled={disabled}
-          className={`px-3 py-2 text-sm rounded-md border bg-white/30 backdrop-blur-sm text-dark text-center
-            focus:outline-none
-            ${error
-              ? "border-red-500 focus:ring-2 focus:ring-red-500"
-              : "border-white focus:ring-2 focus:ring-black/10"}
-            disabled:opacity-50 disabled:cursor-not-allowed
+          className={`px-3 py-2 text-sm rounded-md border bg-white /30 backdrop-blur-sm text-dark text-center
+        focus:outline-none
+        ${error
+          ? "border-red-500 focus:ring-2 focus:ring-red-500"
+          : "border-white focus:ring-2 focus:ring-black/10"}
+        disabled:opacity-50 disabled:cursor-not-allowed
           `}
         />
       </div>

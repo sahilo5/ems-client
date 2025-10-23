@@ -34,6 +34,7 @@ type SalarySummary = {
     endDate: string;
     sandwichedLeaves: number;
     checkIfDone: boolean;
+    leaves:number
 };
 
 type PendingAdvance = {
@@ -225,7 +226,6 @@ export const useSalaryPaymentLogic = () => {
                 netSalary: netSalaryAmount,
                 startDate: salarySummary!.startDate,
                 endDate: salarySummary!.endDate,
-
             };
 
             const res = await api("/admin/salary/logs/add", {
@@ -246,7 +246,6 @@ export const useSalaryPaymentLogic = () => {
         } catch (err: unknown) {
             const message = err?.message || "Failed to mark salary as paid";
             showToast(message, "error");
-            console.error("Error in handlePayConfirm:", err);
         }
     };
 
