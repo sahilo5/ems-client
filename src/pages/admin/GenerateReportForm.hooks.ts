@@ -2,6 +2,8 @@ import { useState, useEffect, useContext } from "react";
 import { api } from "../../utils/api";
 import { AuthContext } from "../../context/AuthContext";
 import { useToast } from "../../components/ToastProvider";
+import { SalaryReportData } from "./SalaryReport.hooks";
+import { useNavigate } from "react-router-dom";
 
 export type ReportType = "Salary" | "Attendance" | "Ledger" | "Expenses";
 
@@ -37,7 +39,7 @@ export type SalarySummary = {
   sandwichedLeaves: number;
   checkIfDone: boolean;
   leaves: number;
-  companyName:string;
+  companyName: string;
 };
 
 export type PendingAdvance = {
@@ -77,14 +79,16 @@ export type OtherPaymentsSummary = {
 export const useGenerateReport = () => {
   const [employees, setEmployees] = useState<Option[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<string>("");
+  const [selectedEmployeeName, setSelectedEmployeeName] = useState<string>("");
   const [reportType, setReportType] = useState<ReportType>("Salary");
   const [periodType, setPeriodType] = useState<"month" | "year">("month");
   const [month, setMonth] = useState<string>("");
   const [year, setYear] = useState<string>("2025");
   const [loading, setLoading] = useState(false);
-  const [reportData, setReportData] = useState<{ salarySummary: SalarySummary; repaymentSummary: RepaymentSummary | null; otherPaymentsSummary: OtherPaymentsSummary | null }[]>([]);
+  const [reportData, setReportData] = useState<SalaryReportData[]>([]);
   const { token } = useContext(AuthContext);
   const { showToast } = useToast();
+  const [popupOpenForSalary, setPopupOpenForSalary] = useState(false);
 
   // Fetch employees for dropdown
   const fetchEmployees = async () => {
@@ -116,73 +120,49 @@ export const useGenerateReport = () => {
     fetchEmployees();
   }, []);
 
+  useEffect(() => {
+    const employee = employees.find(emp => emp.value === selectedEmployee);
+    setSelectedEmployeeName(employee ? employee.label : "");
+  }, [selectedEmployee, employees]);
+
   const generateReport = async () => {
     if (!selectedEmployee || (periodType === "month" && !month) || (periodType === "year" && !year)) {
       showToast("Please fill all required fields", "error");
       return;
     }
 
+    if (!token) {
+      showToast("Authentication token not found", "error");
+      return;
+    }
+
     setLoading(true);
     try {
       if (reportType === "Salary") {
-        // Fetch salary summary
-        const payload = {
-          username: selectedEmployee,
-          month: periodType === "month" ? month : year,
-          forReport:true
-        };
-        const salaryResponse = await api(`/admin/salary/monthly-report`, {
+        const username = selectedEmployee
+        const res = await api("/admin/salary/monthly-summary", {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
+          headers: { Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ username, month }),
         });
 
-        if (!salaryResponse.success) {
-          showToast(salaryResponse.message || "Failed to fetch salary summary", "error");
-          setLoading(false);
-          return;
+        if (res.data.net > 0 || !res.data.checkIfDone) {
+          setPopupOpenForSalary(true);
+        }
+        const { generateSalaryReport } = await import("./SalaryReport.hooks");
+        const reportData = await generateSalaryReport({
+          username: selectedEmployee,
+          employeeName: selectedEmployeeName,
+          month,
+          year,
+          periodType,
+          token,
+          showToast,
+        });
+        if (reportData) {
+          setReportData([reportData]);
         }
 
-        const salarySummary = salaryResponse.data;
-
-        // Fetch repayment summary (advances)
-        const repayResponse = await api(`/admin/salary/get-repayment-summary/${selectedEmployee}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const repaymentSummary = repayResponse.success ? repayResponse.data : null;
-
-        // Fetch other payments summary
-        const othersPayload = {
-          username: selectedEmployee,
-          month: periodType === "month" ? month : year,
-        };
-        const othersResponse = await api(`/admin/salary/get-other-payments-summary?username=${selectedEmployee}`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(othersPayload),
-        });
-
-        const otherPaymentsSummary = othersResponse.success ? othersResponse.data : null;
-
-        // Combine data for salary report
-        const reportData = {
-          salarySummary,
-          repaymentSummary,
-          otherPaymentsSummary,
-        };
-
-        setReportData([reportData]);
-        showToast("Salary report generated successfully", "success");
       } else {
         // For other report types (Attendance, Ledger, Expenses)
         const params = {
@@ -214,9 +194,15 @@ export const useGenerateReport = () => {
     }
   };
 
+  const navigate = useNavigate();
+  const handleConfirmForSalary = () => {
+    navigate("/admin/salary-management");
+  }
+  const handleCancelForSalary = () => {
+    setPopupOpenForSalary(false);
+  }
+
   const exportReport = () => {
-    // TODO: Implement export logic
-    alert("Export functionality not implemented yet");
   };
 
   return {
@@ -235,5 +221,8 @@ export const useGenerateReport = () => {
     reportData,
     generateReport,
     exportReport,
+    popupOpenForSalary, setPopupOpenForSalary,
+    handleConfirmForSalary,
+    handleCancelForSalary
   };
 };

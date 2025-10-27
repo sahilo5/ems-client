@@ -40,7 +40,7 @@ const Navbar: React.FC<NavbarProps> = ({
   }, []);
 
   return (
-    <header className="w-full h-14 flex items-center justify-between px-4 relative">
+    <header className="w-full h-12 flex items-center justify-between px-2 relative">
       {/* Logo / Title */}
       <div
   className="text-xl sm:text-2xl font-bold truncate 

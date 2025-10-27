@@ -4,9 +4,11 @@ import Button from "../../components/Button";
 import Loader from "../../components/Loader";
 import Browse from "../../components/Browse";
 import SalaryReport from "./SalaryReport";
+import YearlySalaryReport from "./YearlySalaryReport";
 import Label from "../../components/Label";
 import { Download, Printer } from "lucide-react";
-import { useGenerateReport, ReportType, SalarySummary, RepaymentSummary, OtherPaymentsSummary } from "./GenerateReportForm.hooks";
+import { useGenerateReport, ReportType } from "./GenerateReportForm.hooks";
+import Popup from "../../components/Popup";
 
 const GenerateReportForm: React.FC = () => {
   const {
@@ -25,6 +27,8 @@ const GenerateReportForm: React.FC = () => {
     reportData,
     generateReport,
     exportReport,
+    popupOpenForSalary, setPopupOpenForSalary, handleConfirmForSalary,
+    handleCancelForSalary
   } = useGenerateReport();
 
   const employeeOptions = employees;
@@ -32,8 +36,8 @@ const GenerateReportForm: React.FC = () => {
   const reportTypeOptions: { label: string; value: ReportType }[] = [
     { label: "Salary", value: "Salary" },
     { label: "Attendance", value: "Attendance" },
-    { label: "Ledger", value: "Ledger" },
-    { label: "Expenses", value: "Expenses" },
+    // { label: "Ledger", value: "Ledger" },
+    // { label: "Expenses", value: "Expenses" },
   ];
 
   const getReportColumns = () => {
@@ -141,11 +145,19 @@ const GenerateReportForm: React.FC = () => {
         {reportData.length > 0 ? (
           <div className="space-y-2">
             {reportType === "Salary" ? (
-              <SalaryReport
-                salarySummary={(reportData[0] as { salarySummary: SalarySummary; repaymentSummary: RepaymentSummary | null; otherPaymentsSummary: OtherPaymentsSummary | null })?.salarySummary}
-                repaymentSummary={(reportData[0] as { salarySummary: SalarySummary; repaymentSummary: RepaymentSummary | null; otherPaymentsSummary: OtherPaymentsSummary | null })?.repaymentSummary}
-                otherPaymentsSummary={(reportData[0] as { salarySummary: SalarySummary; repaymentSummary: RepaymentSummary | null; otherPaymentsSummary: OtherPaymentsSummary | null })?.otherPaymentsSummary}
-              />
+              "salarySummary" in reportData[0] ? (
+                <SalaryReport
+                  salarySummary={reportData[0].salarySummary}
+                  repaymentSummary={reportData[0].repaymentSummary}
+                  otherPaymentsSummary={reportData[0].otherPaymentsSummary}
+                />
+              ) : (
+                <YearlySalaryReport
+                  yearlySalaryData={reportData[0].yearlySummary}
+                  employeeName={reportData[0].employeeName || "Unknown"}
+                  year={year}
+                />
+              )
             ) : (
               <Browse
                 title={`${reportType} Report`}
@@ -172,6 +184,15 @@ const GenerateReportForm: React.FC = () => {
         )}
         {loading && <Loader size={48} color="text-primary" />}
       </div>
+      <Popup
+        title="Confirm"
+        content={`Payment for ${month} is not done Yet!!`}
+        isOpen={popupOpenForSalary}
+        onClose={() => setPopupOpenForSalary(false)}
+        onConfirm={handleConfirmForSalary}
+        onCancel={handleCancelForSalary}
+        variant="confirm"
+      />
     </div>
   );
 };
