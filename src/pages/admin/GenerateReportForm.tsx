@@ -186,7 +186,7 @@ const GenerateReportForm: React.FC = () => {
       </div>
       <Popup
         title="Confirm"
-        content={`Payment for ${month} is not done Yet!!`}
+        content={`Payment for ${month} is not done Yet!! \n Click confirm to pay Salary.`}
         isOpen={popupOpenForSalary}
         onClose={() => setPopupOpenForSalary(false)}
         onConfirm={handleConfirmForSalary}
