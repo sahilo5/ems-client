@@ -9,7 +9,7 @@ type LoaderProps = {
 const Loader: React.FC<LoaderProps> = ({ size = 24, color = "text-light", fullScreen = false }) => {
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/20 backdrop-blur-lg">
         <div
           className={`animate-spin rounded-full border-4 border-t-transparent ${color}`}
           style={{

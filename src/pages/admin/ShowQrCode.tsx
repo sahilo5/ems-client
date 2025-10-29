@@ -36,9 +36,7 @@ const ShowQrCode = () => {
       )}
 
       {permanentLoading && (
-        <div className="flex items-center justify-center bg-light mt-4">
-          <Loader size={48} color="text-primary" />
-        </div>
+        <Loader fullScreen />
       )}
 
       {/* Hidden printable QR code container */}
@@ -48,7 +46,7 @@ const ShowQrCode = () => {
             @media print {
               body * { visibility: hidden; }
               #printable-qr, #printable-qr * { visibility: visible; }
-              #printable-qr { position: absolute; width: 100%; height: 100%; display: flex !important; justify-content: center; align-items: center; }
+              #printable-qr { position: absolute; left:10%; right:60% width: 100%; height: 100%; display: flex !important; justify-content: center; align-items: center; }
             }
           `}
         </style>

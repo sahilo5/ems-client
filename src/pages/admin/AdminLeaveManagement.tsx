@@ -32,6 +32,7 @@ const AdminLeaveManagement = () => {
           <div className="flex gap-2">
             {/* Approve button */}
             <Button
+            disabled={row.status === "APPROVED"}
               variant="safe"
               title="Approve"
               onClick={() => handleUpdateLeaveStatus(row.id, "APPROVED")}
@@ -41,6 +42,7 @@ const AdminLeaveManagement = () => {
 
             {/* Reject button */}
             <Button
+            disabled={row.status === "REJECTED"}
               variant="danger"
               title="Reject"
               onClick={() => {
@@ -68,9 +70,7 @@ const AdminLeaveManagement = () => {
 
 
       {loading && (
-        <div className="flex items-center justify-center bg-light">
-          <Loader size={48} color="text-primary" />
-        </div>
+        <Loader fullScreen />
       )}
 
       {/* Reject reason popup */}

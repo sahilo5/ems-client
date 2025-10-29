@@ -49,7 +49,7 @@ const Popup: React.FC<PopupProps> = ({
   const variantClasses = getVariantColors();
 
   const popupContent = (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30 backdrop-blur-sm">
       <div
         className={`w-[90%] max-w-md rounded-2xl backdrop-blur-sm bg-white/75 text-dark shadow-inner shadow-white/50 border-white border-1 p-6 ${variantClasses.bg} transition`}
       >
